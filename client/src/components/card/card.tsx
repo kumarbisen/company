@@ -1,9 +1,9 @@
-import "./card.css"
+import "./card.module.css"
 
-const card = ()=>{
+const Card = ()=>{
     return (
         <p>Card</p>
     )
 }
 
-export default card;
+export default Card;

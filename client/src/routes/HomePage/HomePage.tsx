@@ -1,8 +1,8 @@
-import "./HomePage.css"
+import "./HomePage.module.css"
 
 const HomePage = ()=>{
     return (
-        <p>HomePage</p>
+        <p> Welcome to HomePage</p>
     )
 }
 
