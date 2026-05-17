@@ -1,13 +1,13 @@
 import { PageIntro } from "../../components/PageIntro/PageIntro"
 import { servicePages } from "../../data/site"
 import { Layout } from "../../Layout/Layout"
-import * as styles from "./ExplorePage.css"
+import * as styles from "./ServicesPage.css"
 
-export function ExplorePage() {
+export function ServicesPage() {
   return (
     <Layout>
       <section className={styles.page}>
-        <PageIntro kicker="Explore" title="Browse service pods by business need." />
+        <PageIntro kicker="Services" title="All services offered by KunalConnects." />
         <div className={styles.grid}>
           {servicePages.map((service, index) => (
             <a className={styles.card} key={service.slug} href={`/services/${service.slug}`}>

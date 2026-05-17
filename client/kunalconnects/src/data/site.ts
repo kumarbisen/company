@@ -5,16 +5,98 @@ export const navItems = [
   { label: "FAQ", href: "/faq" },
 ]
 
-export const services = [
-  "Social Media Growth",
-  "Paid Ads",
-  "Web Design",
-  "CRM Automation",
-  "Brand Strategy",
-  "Content Production",
-  "Lead Generation",
-  "Analytics",
+export const servicePages = [
+  {
+    name: "App Development",
+    slug: "app-development",
+    description: "Build product-ready web and mobile experiences with UX, engineering, and a growth-ready launch plan.",
+    included: [
+      "Product vision and feature planning",
+      "UX/UI design for web and mobile",
+      "Frontend engineering and responsive pages",
+      "Backend and API integration",
+      "QA, deployment, and launch readiness",
+    ],
+    idealFor: [
+      "Founders launching a new digital product",
+      "Businesses that need a modern website or app",
+      "Teams that want reliable build delivery without hiring in-house",
+    ],
+    outcomes: [
+      "A polished production app or website",
+      "Faster launch with clear milestones",
+      "A stable codebase ready for ongoing growth",
+    ],
+  },
+  {
+    name: "Social Media Management",
+    slug: "social-media-management",
+    description: "Turn your brand presence into a consistent publishing engine with content, engagement, and growth measurement.",
+    included: [
+      "Content calendar and campaign planning",
+      "Social media post creation and publishing",
+      "Community engagement and inbox management",
+      "Performance tracking and weekly reporting",
+      "Creative optimization and channel testing",
+    ],
+    idealFor: [
+      "Brands needing regular social content",
+      "Founders who want better audience conversion from social",
+      "Teams that need consistent quality without more headcount",
+    ],
+    outcomes: [
+      "A reliable publishing rhythm across channels",
+      "Clear content ROI and engagement signals",
+      "Stronger social audience and lead inflow",
+    ],
+  },
+  {
+    name: "Marketing",
+    slug: "marketing",
+    description: "Align your offer, audience, and campaigns with a demand-generation plan that drives leads, conversions, and measurable momentum.",
+    included: [
+      "Messaging and positioning audit",
+      "Campaign strategy for paid and organic channels",
+      "Landing pages, funnels, and ad creative",
+      "Conversion optimization and retargeting",
+      "Weekly monitoring and optimization",
+    ],
+    idealFor: [
+      "Companies that need a cohesive growth plan",
+      "Teams with inconsistent lead flow",
+      "Brands that want smarter campaign execution",
+    ],
+    outcomes: [
+      "Clearer brand messaging and campaign focus",
+      "Predictable lead generation and funnel performance",
+      "Optimized spend and better qualified traffic",
+    ],
+  },
+  {
+    name: "Web Development",
+    slug: "web-development",
+    description: "Build a fast, conversion-ready website with page speed, UX, and launch-ready content that supports every campaign.",
+    included: [
+      "Landing page and website design",
+      "Responsive development and CMS setup",
+      "Copy optimization for offers and audiences",
+      "Analytics, tracking, and form workflows",
+      "Launch review and QA",
+    ],
+    idealFor: [
+      "Businesses that need a better website foundation",
+      "Campaigns that require modern landing pages",
+      "Teams that want fewer handoffs between design and dev",
+    ],
+    outcomes: [
+      "Improved website experience and conversions",
+      "A launch-ready site built for growth",
+      "Clear tracking and customer capture workflows",
+    ],
+  },
 ]
+
+export const services = servicePages.map((service) => service.name)
 
 export const feedItems = [
   {

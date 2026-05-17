@@ -10,6 +10,11 @@ import { InvitePage } from "../pages/InvitePage/InvitePage"
 import { LegalPage } from "../pages/LegalPage/LegalPage"
 import { LiveFeedPage } from "../pages/LiveFeedPage/LiveFeedPage"
 import { NotFoundPage } from "../pages/NotFoundPage/NotFoundPage"
+import { ServicesPage } from "../pages/ServicesPage/ServicesPage"
+import { AppDevelopmentPage } from "../pages/ServicesPage/AppDevelopmentPage"
+import { SocialMediaManagementPage } from "../pages/ServicesPage/SocialMediaManagementPage"
+import { MarketingPage } from "../pages/ServicesPage/MarketingPage"
+import { WebDevelopmentPage } from "../pages/ServicesPage/WebDevelopmentPage"
 import { UnsubscribePage } from "../pages/UnsubscribePage/UnsubscribePage"
 
 type AppRoute = {
@@ -23,6 +28,11 @@ export const routes: AppRoute[] = [
   { path: "/live-feed", element: <LiveFeedPage /> },
   { path: "/chat", element: <ChatPage /> },
   { path: "/explore", element: <ExplorePage /> },
+  { path: "/services", element: <ServicesPage /> },
+  { path: "/services/app-development", element: <AppDevelopmentPage /> },
+  { path: "/services/social-media-management", element: <SocialMediaManagementPage /> },
+  { path: "/services/marketing", element: <MarketingPage /> },
+  { path: "/services/web-development", element: <WebDevelopmentPage /> },
   { path: "/agent", element: <AgentPage /> },
   { path: "/agent/claim", element: <ClaimPage /> },
   { path: "/invite", element: <InvitePage /> },
