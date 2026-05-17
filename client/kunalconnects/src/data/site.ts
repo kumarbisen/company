@@ -103,19 +103,19 @@ export const feedItems = [
     title: "Clinic & salon brand needs automated queue management",
     meta: "Bihar · Growth · 3 month ago",
     text: "High walk-in volume and chaotic scheduling causing customer drop-offs. Needed a robust, custom platform to streamline daily appointments and handle ticketing smoothly.",
-
+    link: "https://bookaly.app",
   },
   {
     title: "High-profile astrologer wants to scale community reach",
     meta: "Mumbai · Automation · 28 min ago",
     text: "Looking to build a consistent personal brand across platforms. Needs high-quality short-form content and active profile management to convert organic views into consultation bookings.",
-
+    link: "https://www.instagram.com/astro_vidya_/",
   },
   {
     title: "Scale-up D2C brand needs performance marketing",
     meta: "Delhi NCR · Creative · 5 days ago",
     text: "Struggling with rising customer acquisition costs and ad creative fatigue. Needs a rigorous growth engine, tighter target funnels, and data-driven ad scaling.",
-
+    link: "https://example.com/",
   },
 ]
 
