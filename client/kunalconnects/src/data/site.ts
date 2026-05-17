@@ -18,22 +18,22 @@ export const services = [
 
 export const feedItems = [
   {
-    title: "Retail brand needs a launch system",
-    meta: "Mumbai · Growth · 12 min ago",
-    text: "Looking for content, ads, and weekly reporting for a premium skincare campaign.",
-    match: "KunalConnects matched: paid social, landing page, creator ops",
+    title: "Clinic & salon brand needs automated queue management",
+    meta: "Bihar · Growth · 3 month ago",
+    text: "High walk-in volume and chaotic scheduling causing customer drop-offs. Needed a robust, custom platform to streamline daily appointments and handle ticketing smoothly.",
+
   },
   {
-    title: "Founder wants CRM and follow-up automation",
-    meta: "Bengaluru · Automation · 28 min ago",
-    text: "Service pipeline is growing, but replies and lead handoffs are getting messy.",
-    match: "KunalConnects matched: workflow audit, CRM setup, nurture sequences",
+    title: "High-profile astrologer wants to scale community reach",
+    meta: "Mumbai · Automation · 28 min ago",
+    text: "Looking to build a consistent personal brand across platforms. Needs high-quality short-form content and active profile management to convert organic views into consultation bookings.",
+
   },
   {
-    title: "D2C team needs performance creative",
-    meta: "Delhi NCR · Creative · 42 min ago",
-    text: "Existing ads fatigue quickly. Need a tighter testing engine and clearer hooks.",
-    match: "KunalConnects matched: UGC scripts, design, media buying",
+    title: "Scale-up D2C brand needs performance marketing",
+    meta: "Delhi NCR · Creative · 5 days ago",
+    text: "Struggling with rising customer acquisition costs and ad creative fatigue. Needs a rigorous growth engine, tighter target funnels, and data-driven ad scaling.",
+
   },
 ]
 

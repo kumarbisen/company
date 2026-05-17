@@ -6,7 +6,7 @@ import * as styles from "./LiveFeedPage.css"
 export function LiveFeedPage({ compact = false }: { compact?: boolean }) {
   const content = (
     <section className={compact ? styles.compact : styles.page}>
-      {!compact && <PageIntro kicker="Live Feed" title="Signals moving through the KunalConnects network." />}
+      {!compact && <PageIntro kicker="Live" title="Services we deliver through KunalConnects network." />}
       <div className={styles.shell}>
         <div className={styles.header}>
           <span className={styles.liveDot} />
@@ -19,7 +19,7 @@ export function LiveFeedPage({ compact = false }: { compact?: boolean }) {
               <small className={styles.meta}>{item.meta}</small>
               <h3 className={styles.title}>{item.title}</h3>
               <p className={styles.text}>{item.text}</p>
-              <b className={styles.match}>{item.match}</b>
+
             </article>
           ))}
         </div>
