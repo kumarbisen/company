@@ -28,7 +28,7 @@ export function Navigation() {
       {/* Desktop actions */}
       <div className={styles.actions}>
         <a className={styles.networkButton} href="/services">
-          <span className={styles.chatIcon} aria-hidden="true" />
+
           Services
         </a>
         <a className={styles.darkButton} href="/agent">
