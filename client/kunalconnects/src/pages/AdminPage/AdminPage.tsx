@@ -18,7 +18,7 @@ type FeedItem = {
   title: string
   meta: string
   text: string
-  match: string
+
 }
 
 type Message = {
@@ -84,7 +84,7 @@ const blankStory = (): Omit<Story, "id"> => ({
 })
 
 const blankFeed = (): Omit<FeedItem, "id"> => ({
-  title: "", meta: "", text: "", match: "",
+  title: "", meta: "", text: "",
 })
 
 /* ─── Component ──────────────────────────────────────────────── */
@@ -142,7 +142,7 @@ export function AdminPage() {
   }
   function openEditFeed(f: FeedItem) {
     setFeedModal(f)
-    setFeedDraft({ title: f.title, meta: f.meta, text: f.text, match: f.match })
+    setFeedDraft({ title: f.title, meta: f.meta, text: f.text, })
   }
   function saveFeed() {
     if (!feedDraft || !feedModal) return
@@ -421,11 +421,7 @@ export function AdminPage() {
                 <textarea className={styles.textarea} value={feedDraft.text}
                   onChange={(e) => setFeedDraft({ ...feedDraft, text: e.target.value })} />
               </label>
-              <label className={styles.label}>
-                Match Tag
-                <input className={styles.input} value={feedDraft.match}
-                  onChange={(e) => setFeedDraft({ ...feedDraft, match: e.target.value })} placeholder="KunalConnects matched: …" />
-              </label>
+
             </div>
             <div className={styles.modalActions}>
               <button className={styles.cancelBtn} onClick={() => { setFeedModal(null); setFeedDraft(null) }}>Cancel</button>
