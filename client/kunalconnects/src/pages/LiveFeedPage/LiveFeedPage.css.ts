@@ -59,3 +59,24 @@ export const meta = style({ color: tokens.muted, fontWeight: 700 })
 export const title = style({ margin: "18px 0 12px", fontSize: 26, lineHeight: 1.05 })
 export const text = style({ color: tokens.muted, lineHeight: 1.45 })
 export const match = style({ display: "block", marginTop: 28, color: tokens.ink })
+
+export const linkIcon = style({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  marginTop: 18,
+  width: 34,
+  height: 34,
+  borderRadius: 8,
+  border: `1px solid ${tokens.line}`,
+  color: tokens.muted,
+  background: "transparent",
+  transition: "all 0.2s ease",
+  textDecoration: "none",
+  ":hover": {
+    color: tokens.ink,
+    borderColor: tokens.ink,
+    background: "rgba(255,255,255,0.04)",
+    transform: "translateY(-1px)",
+  },
+})
