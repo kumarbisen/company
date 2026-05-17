@@ -10,6 +10,12 @@ export const hero = style({
   position: "relative",
   minHeight: "calc(100svh - 80px)",
   padding: "78px 24px 36px",
+  "@media": {
+    "(max-width: 860px)": {
+      minHeight: "auto",
+      padding: "48px 16px 24px",
+    },
+  },
   overflow: "hidden",
 })
 

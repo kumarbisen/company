@@ -2,6 +2,7 @@ export const navItems = [
   { label: "Live", href: "/live-feed" },
   { label: "How it works", href: "/#how-it-works" },
   { label: "Benefits", href: "/#benefits" },
+  { label: "Services", href: "/services" },
   { label: "FAQ", href: "/faq" },
 ]
 
@@ -165,35 +166,35 @@ export const topStories = [
     title: "Infosys Unveils AI First Value Framework: Uniquely Positioned to Capture New AI Services Opportunity of Over $300 Billion",
     category: "Technology",
     excerpt: "Infosys announces a new value framework built around AI-first delivery, targeting a rapidly expanding global market opportunity.",
-    link: "#",
+    link: "https://en.wikipedia.org/wiki/Infosys",
     image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&q=80",
   },
   {
     title: "How Startups Are Winning with Lean Growth Systems Instead of Big Marketing Teams",
     category: "Growth",
     excerpt: "Founders across sectors are discovering that focused service pods outperform bloated in-house marketing departments.",
-    link: "#",
+    link: "https://en.wikipedia.org/wiki/Startup",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80",
   },
   {
     title: "CRM Automation Is Now the Single Biggest Lever for D2C Revenue Recovery in 2025",
     category: "Automation",
     excerpt: "New industry data shows that brands with automated follow-up sequences recover 38% more abandoned carts and inquiries.",
-    link: "#",
+    link: "https://en.wikipedia.org/wiki/Customer_relationship_management",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80",
   },
   {
     title: "Why Performance Creative Is the Most Underinvested Area in Indian Startup Marketing",
     category: "Creative",
     excerpt: "Ad fatigue is real — and the solution isn't bigger budgets, it's faster creative iteration cycles and tighter hook strategies.",
-    link: "#",
+    link: "https://en.wikipedia.org/wiki/Advertising",
     image: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1200&q=80",
   },
   {
     title: "From Zero to 50 Qualified Leads a Month: A Mumbai Brand's Systematic Growth Story",
     category: "Case Study",
     excerpt: "A deep-dive into how a premium skincare brand rebuilt their demand engine using content, paid social, and creator operations.",
-    link: "#",
+    link: "https://en.wikipedia.org/wiki/Marketing",
     image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&q=80",
   },
 ]
