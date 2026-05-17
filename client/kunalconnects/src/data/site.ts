@@ -112,10 +112,10 @@ export const feedItems = [
     link: "https://www.instagram.com/astro_vidya_/",
   },
   {
-    title: "Scale-up D2C brand needs performance marketing",
+    title: "Scale-up D2C brand needs social media marketing",
     meta: "Delhi NCR · Creative · 5 days ago",
-    text: "Struggling with rising customer acquisition costs and ad creative fatigue. Needs a rigorous growth engine, tighter target funnels, and data-driven ad scaling.",
-    link: "https://example.com/",
+    text: "Struggling with rising customer demands of achar made with love of dadi hands",
+    link: "https://www.instagram.com/dadinanikaachar/",
   },
 ]
 
