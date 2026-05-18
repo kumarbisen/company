@@ -27,7 +27,7 @@ export const header = style({
   /* on mobile, allow it to grow to wrap the mobile drawer */
   flexWrap: "wrap",
   "@media": {
-    "(max-width: 860px)": {
+    "(max-width: 900px)": {
       padding: "0 12px 0 20px",
       borderRadius: 24,
       gap: 0,
