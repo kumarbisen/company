@@ -1,37 +1,37 @@
-import { Router } from "express"
-import { requireAuth } from "../middleware/auth.js"
+import { Router, Request, Response } from "express"
+import { requireAuth, RequestWithAdmin } from "../middleware/auth"
 import {
   getAllFeedItems,
   getFeedItemById,
   createFeedItem,
   updateFeedItem,
   deleteFeedItem,
-} from "../data/db.js"
+} from "../data/db"
 
 const router = Router()
 
-router.get("/", (req, res) => {
+router.get("/", (req: Request, res: Response) => {
   res.json(getAllFeedItems())
 })
 
-router.get("/:id", (req, res) => {
+router.get("/:id", (req: Request, res: Response) => {
   const item = getFeedItemById(req.params.id)
   if (!item) return res.status(404).json({ error: "Not found" })
   res.json(item)
 })
 
-router.post("/", requireAuth, (req, res) => {
+router.post("/", requireAuth, (req: RequestWithAdmin, res: Response) => {
   const newItem = createFeedItem(req.body)
   res.status(201).json(newItem)
 })
 
-router.put("/:id", requireAuth, (req, res) => {
+router.put("/:id", requireAuth, (req: RequestWithAdmin, res: Response) => {
   const updated = updateFeedItem(req.params.id, req.body)
   if (!updated) return res.status(404).json({ error: "Not found" })
   res.json(updated)
 })
 
-router.delete("/:id", requireAuth, (req, res) => {
+router.delete("/:id", requireAuth, (req: RequestWithAdmin, res: Response) => {
   const deleted = deleteFeedItem(req.params.id)
   if (!deleted) return res.status(404).json({ error: "Not found" })
   res.json({ success: true })

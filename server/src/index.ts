@@ -2,18 +2,21 @@ import "dotenv/config"
 import express from "express"
 import cors from "cors"
 
-import authRoutes from "./routes/auth.js"
-import feedRoutes from "./routes/feed.js"
-import storiesRoutes from "./routes/stories.js"
-import messagesRoutes from "./routes/messages.js"
+import authRoutes from "./routes/auth"
+import feedRoutes from "./routes/feed"
+import storiesRoutes from "./routes/stories"
+import messagesRoutes from "./routes/messages"
 
 const app = express()
 const PORT = process.env.PORT || 4000
+const uri = process.env.MONGO_URI 
 
 // Middleware
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS || "http://localhost:5173"
-}))
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS || "http://localhost:5173",
+  })
+)
 app.use(express.json())
 
 // API Routes
@@ -33,7 +36,7 @@ app.use((req, res) => {
 })
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack)
   res.status(500).json({ error: "Internal server error" })
 })
