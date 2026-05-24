@@ -457,3 +457,83 @@ export const statLabel = style({
   textTransform: "uppercase",
   letterSpacing: "0.08em",
 })
+
+/* ─── Client Workspaces & Admin Controls ─── */
+export const clientGrid = style({
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: 16,
+  "@media": { "(max-width: 800px)": { gridTemplateColumns: "1fr" } },
+})
+
+export const clientCard = style({
+  background: tokens.surface,
+  border: `1px solid ${tokens.line}`,
+  borderRadius: 8,
+  padding: 20,
+  cursor: "pointer",
+  transition: "border-color 0.15s, transform 0.15s",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  gap: 12,
+  animation: `${fadeIn} 0.22s ease both`,
+  ":hover": {
+    borderColor: tokens.ink,
+    transform: "translateY(-1px)",
+  },
+})
+
+export const clientHeader = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+})
+
+export const clientTitle = style({
+  fontWeight: 800,
+  fontSize: 16,
+  margin: 0,
+})
+
+export const clientCompany = style({
+  fontSize: 13,
+  color: tokens.muted,
+  fontWeight: 600,
+})
+
+export const workspaceContainer = style({
+  display: "grid",
+  gridTemplateColumns: "1.2fr 1fr",
+  gap: 24,
+  background: tokens.surface,
+  border: `1px solid ${tokens.line}`,
+  borderRadius: 12,
+  padding: 24,
+  animation: `${fadeIn} 0.25s ease both`,
+  "@media": { "(max-width: 900px)": { gridTemplateColumns: "1fr" } },
+})
+
+export const formRow = style({
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: 12,
+})
+
+export const serviceCtrlBox = style({
+  border: `1px solid ${tokens.line}`,
+  borderRadius: 8,
+  padding: 16,
+  background: tokens.paper,
+  marginBottom: 12,
+})
+
+export const serviceCtrlHeader = style({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 10,
+  fontWeight: 800,
+  fontSize: 14,
+})
+

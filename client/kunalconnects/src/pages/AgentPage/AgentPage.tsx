@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react"
 import { PageIntro } from "../../components/PageIntro/PageIntro"
 import { Layout } from "../../Layout/Layout"
+import { apiUrl } from "../../data/api"
 import * as styles from "./AgentPage.css"
 
 const goalOptions = [
   "Web Development",
   "App Development",
   "Social Media Management",
-  "Social Media Marketing",
+  "Marketing",
   "Other Services",
 ]
 
@@ -15,6 +16,15 @@ export function AgentPage() {
   const [goalValue, setGoalValue] = useState("")
   const [showDropdown, setShowDropdown] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
+
+  // Form states
+  const [companyName, setCompanyName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [budget, setBudget] = useState("")
+  const [details, setDetails] = useState("")
+  
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const filtered = goalOptions.filter((opt) =>
     opt.toLowerCase().includes(goalValue.toLowerCase())
@@ -30,14 +40,98 @@ export function AgentPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  // Auto-submit after login listener
+  useEffect(() => {
+    function handleAutoSubmit() {
+      // Small timeout to allow token to be stored
+      setTimeout(() => {
+        submitBrief()
+      }, 100)
+    }
+    window.addEventListener("user-logged-in", handleAutoSubmit)
+    return () => window.removeEventListener("user-logged-in", handleAutoSubmit)
+  }, [companyName, goalValue, phone, budget, details])
+
+  async function submitBrief() {
+    const token = localStorage.getItem("user_token")
+    if (!token) {
+      // Trigger Login Modal
+      window.dispatchEvent(new Event("open-google-login"))
+      return
+    }
+
+    if (!companyName || !goalValue || !phone || !budget || !details) {
+      setError("Please fill out all fields before submitting.")
+      return
+    }
+
+    setLoading(true)
+    setError("")
+
+    try {
+      const resp = await fetch(apiUrl("/api/workspace/brief"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          companyName,
+          primaryGoal: goalValue,
+          phone,
+          budget,
+          details,
+        }),
+      })
+
+      // If token expired or invalid, prompt re-login
+      if (resp.status === 401 || resp.status === 403) {
+        // Clear stored credentials
+        localStorage.removeItem("user_token")
+        localStorage.removeItem("user_profile")
+        // Notify user and open login modal
+        setError("Session expired. Please sign in again.")
+        window.dispatchEvent(new Event("open-google-login"))
+        setLoading(false)
+        return
+      }
+
+      const data = await resp.json().catch(() => null)
+      if (resp.ok) {
+        // Redirect to user workspace
+        window.location.href = "/workspace"
+      } else {
+        setError(data?.error || "Failed to submit your brief. Please try again.")
+      }
+    } catch (err) {
+      console.error("Error submitting brief", err)
+      setError("Connection error. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Layout>
       <section className={styles.page}>
         <PageIntro kicker="Get started" title="Build your KunalConnects growth brief." />
-        <form className={styles.form}>
+        
+        <form className={styles.form} onSubmit={(e) => { e.preventDefault(); submitBrief(); }}>
+          {error && (
+            <div style={{ padding: 14, borderRadius: 8, background: "#fef2f2", border: "1px solid #fee2e2", color: "#dc2626", fontWeight: 600 }}>
+              {error}
+            </div>
+          )}
+
           <label className={styles.label}>
             Company name
-            <input className={styles.field} placeholder="Company name" />
+            <input
+              className={styles.field}
+              placeholder="Company name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              required
+            />
           </label>
 
           <div className={styles.label} ref={wrapperRef}>
@@ -53,6 +147,7 @@ export function AgentPage() {
                 }}
                 onFocus={() => setShowDropdown(true)}
                 autoComplete="off"
+                required
               />
               {showDropdown && filtered.length > 0 && (
                 <ul className={styles.dropdown}>
@@ -75,19 +170,40 @@ export function AgentPage() {
 
           <label className={styles.label}>
             Phone Number
-            <input className={styles.field} placeholder="Phone Number" />
+            <input
+              className={styles.field}
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+            />
           </label>
 
           <label className={styles.label}>
             Monthly budget range
-            <input className={styles.field} placeholder="Monthly budget range" />
+            <input
+              className={styles.field}
+              placeholder="Monthly budget range"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              required
+            />
           </label>
 
           <label className={styles.label}>
             What should the service pod solve first?
-            <textarea className={styles.textarea} placeholder="Tell us what is stuck, what you want to improve, and what success looks like." />
+            <textarea
+              className={styles.textarea}
+              placeholder="Tell us what is stuck, what you want to improve, and what success looks like."
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              required
+            />
           </label>
-          <button className={styles.submit} type="button">Create brief</button>
+
+          <button className={styles.submit} type="submit" disabled={loading}>
+            {loading ? "Submitting..." : "Create brief"}
+          </button>
         </form>
       </section>
     </Layout>

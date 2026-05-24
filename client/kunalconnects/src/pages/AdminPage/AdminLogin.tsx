@@ -1,15 +1,9 @@
 import { type FormEvent, useState } from "react"
+import { apiUrl } from "../../data/api"
 import * as styles from "./AdminLogin.css"
 
-/* ─── Hardcoded credentials ─────────────────────────────────
-   Change these to whatever you prefer. Since this is a
-   frontend-only project with no backend, credentials live here.
-   ─────────────────────────────────────────────────────────── */
-const ADMIN_USERNAME = "admin"
-const ADMIN_PASSWORD = "kunal@2025"
-
 type Props = {
-  onLogin: () => void
+  onLogin: (token: string) => void
 }
 
 export function AdminLogin({ onLogin }: Props) {
@@ -24,18 +18,26 @@ export function AdminLogin({ onLogin }: Props) {
     setError("")
     setLoading(true)
 
-    // Simulate a brief network delay for realism
-    setTimeout(() => {
-      if (
-        username.trim() === ADMIN_USERNAME &&
-        password === ADMIN_PASSWORD
-      ) {
-        onLogin()
-      } else {
-        setError("Incorrect username or password. Please try again.")
+    fetch(apiUrl("/api/auth/login"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Incorrect username or password. Please try again.")
+        return res.json()
+      })
+      .then((data) => {
+        if (data.token) {
+          onLogin(data.token)
+        } else {
+          throw new Error("Invalid server response")
+        }
+      })
+      .catch((err) => {
+        setError(err.message)
         setLoading(false)
-      }
-    }, 700)
+      })
   }
 
   const hasError = error.length > 0

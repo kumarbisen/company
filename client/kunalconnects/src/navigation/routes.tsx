@@ -16,6 +16,7 @@ import { SocialMediaManagementPage } from "../pages/ServicesPage/SocialMediaMana
 import { MarketingPage } from "../pages/ServicesPage/MarketingPage"
 import { WebDevelopmentPage } from "../pages/ServicesPage/WebDevelopmentPage"
 import { UnsubscribePage } from "../pages/UnsubscribePage/UnsubscribePage"
+import { WorkspacePage } from "../pages/WorkspacePage/WorkspacePage"
 
 type AppRoute = {
   path: string
@@ -40,6 +41,7 @@ export const routes: AppRoute[] = [
   { path: "/privacy", element: <LegalPage type="privacy" /> },
   { path: "/faq", element: <FaqPage /> },
   { path: "/unsubscribe", element: <UnsubscribePage /> },
+  { path: "/workspace", element: <WorkspacePage /> },
 ]
 
 export function resolveRoute(pathname: string) {

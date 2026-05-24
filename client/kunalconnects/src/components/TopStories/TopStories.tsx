@@ -1,13 +1,38 @@
 import { useState, useEffect } from "react"
-import { topStories } from "../../data/site"
+import { topStories as fallbackStories } from "../../data/site"
+import { apiUrl } from "../../data/api"
 import * as styles from "./TopStories.css"
 
 export function TopStories() {
+  const [stories, setStories] = useState<any[]>(fallbackStories)
   const [index, setIndex] = useState(0)
-  const total = topStories.length
-  const story = topStories[index]
-  const [title, setTitle] = useState(story.title)
-  const [excerpt, setExcerpt] = useState(story.excerpt)
+
+  useEffect(() => {
+    fetch(apiUrl("/api/stories"))
+      .then((res) => {
+        if (!res.ok) throw new Error("Server error")
+        return res.json()
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setStories(data)
+        }
+      })
+      .catch((err) => console.log("Failed to fetch stories from server, using site data fallback", err))
+  }, [])
+
+  const total = stories.length
+  const story = stories[index]
+  const [title, setTitle] = useState(story?.title || "")
+  const [excerpt, setExcerpt] = useState(story?.excerpt || "")
+
+  // Sync state whenever story changes
+  useEffect(() => {
+    if (story) {
+      setTitle(story.title)
+      setExcerpt(story.excerpt || "")
+    }
+  }, [story])
 
   function prev() {
     setIndex((i) => Math.max(0, i - 1))
@@ -19,9 +44,9 @@ export function TopStories() {
 
   // fetch metadata for external links and update local title/excerpt
   useEffect(() => {
-    if (!story?.link || !story.link.startsWith("http")) return
+    if (!story?.link || !story.link.startsWith("http") || story.link.includes("#")) return
     const controller = new AbortController()
-    fetch(`http://localhost:4000/meta?url=${encodeURIComponent(story.link)}`, { signal: controller.signal })
+    fetch(apiUrl(`/meta?url=${encodeURIComponent(story.link)}`), { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         if (data.title) setTitle(data.title)
@@ -30,6 +55,8 @@ export function TopStories() {
       .catch(() => {})
     return () => controller.abort()
   }, [story?.link])
+
+  if (!story) return null
 
   return (
     <section className={styles.section}>
