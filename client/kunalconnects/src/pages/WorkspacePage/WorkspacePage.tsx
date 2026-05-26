@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import type { ReactNode } from "react"
 import { apiUrl } from "../../data/api"
 import * as styles from "./WorkspacePage.css"
 
@@ -421,18 +422,61 @@ export function WorkspacePage() {
             <div className={styles.sidebarLabel}>Workspace Options</div>
             {(
               [
-                { key: "brief", label: "Brief & Progress", icon: "📊" },
-                { key: "services", label: "Select Services", icon: "🛠️" },
-                { key: "messages", label: "Messages Chat", icon: "✉️" },
-                { key: "payments", label: "Payments Ledger", icon: "💳" },
-              ] as { key: Tab; label: string; icon: string }[]
+                {
+                  key: "brief",
+                  label: "Brief & Progress",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M4 20V10" />
+                      <path d="M10 20V4" />
+                      <path d="M16 20v-6" />
+                      <path d="M22 20v-9" />
+                    </svg>
+                  ),
+                },
+                {
+                  key: "services",
+                  label: "Select Services",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M8 3h8l1 4-5 5-5-5 1-4Z" />
+                      <path d="M12 12v9" />
+                      <path d="M8 17h8" />
+                    </svg>
+                  ),
+                },
+                {
+                  key: "messages",
+                  label: "Messages Chat",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="m6 9 6 4 6-4" />
+                    </svg>
+                  ),
+                },
+                {
+                  key: "payments",
+                  label: "Payments Ledger",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="6" width="18" height="12" rx="2" />
+                      <path d="M3 11h18" />
+                      <path d="M7 15h3" />
+                    </svg>
+                  ),
+                },
+              ] as { key: Tab; label: string; icon: ReactNode }[]
             ).map(({ key, label, icon }) => (
               <button
                 key={key}
                 className={`${styles.sidebarItem} ${tab === key ? styles.sidebarItemActive : ""}`}
                 onClick={() => setTab(key)}
               >
-                <span>{icon}</span> {label}
+                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16 }}>
+                  {icon}
+                </span>
+                {label}
               </button>
             ))}
           </div>

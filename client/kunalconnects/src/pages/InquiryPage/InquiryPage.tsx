@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react"
 import { PageIntro } from "../../components/PageIntro/PageIntro"
 import { Layout } from "../../Layout/Layout"
 import { apiUrl } from "../../data/api"
-import * as styles from "./AgentPage.css"
+import * as styles from "./InquiryPage.css"
 
 const goalOptions = [
   "Web Development",
@@ -12,7 +12,7 @@ const goalOptions = [
   "Other Services",
 ]
 
-export function AgentPage() {
+export function InquiryPage() {
   const [goalValue, setGoalValue] = useState("")
   const [showDropdown, setShowDropdown] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)

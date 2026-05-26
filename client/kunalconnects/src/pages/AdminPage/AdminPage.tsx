@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import type { ReactNode } from "react"
 import { AdminLogin } from "./AdminLogin"
 import { apiUrl } from "../../data/api"
 import * as styles from "./AdminPage.css"
@@ -394,10 +395,42 @@ export function AdminPage() {
           <div className={styles.sidebarLabel}>Manage</div>
           {(
             [
-              { key: "stories", label: "Top Stories", icon: "📰" },
-              { key: "feed", label: "Live Feed", icon: "⚡" },
-              { key: "clients", label: "Client Workspaces", icon: "💼" },
-            ] as { key: Tab; label: string; icon: string }[]
+              {
+                key: "stories",
+                label: "Top Stories",
+                icon: (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                    <path d="M8 9h8" />
+                    <path d="M8 13h5" />
+                    <path d="M8 17h8" />
+                  </svg>
+                ),
+              },
+              {
+                key: "feed",
+                label: "Live Feed",
+                icon: (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 16c2.4-2.4 4.6-4.6 8-8" />
+                    <path d="m11 8 2-2a3 3 0 0 1 4 4l-2 2" />
+                    <path d="M7 18a2 2 0 1 1-2-2 2 2 0 0 1 2 2Z" />
+                    <path d="m14 11 3 3" />
+                  </svg>
+                ),
+              },
+              {
+                key: "clients",
+                label: "Client Workspaces",
+                icon: (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="3" y="6" width="18" height="14" rx="2" />
+                    <path d="M9 6V4h6v2" />
+                    <path d="M3 12h18" />
+                  </svg>
+                ),
+              },
+            ] as { key: Tab; label: string; icon: ReactNode }[]
           ).map(({ key, label, icon }) => (
             <button
               key={key}
@@ -407,7 +440,10 @@ export function AdminPage() {
                 setSelectedClient(null)
               }}
             >
-              <span>{icon}</span> {label}
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16 }}>
+                {icon}
+              </span>
+              {label}
             </button>
           ))}
         </aside>
