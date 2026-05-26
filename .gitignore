@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+*.pem
+aws_summary.txt
+policy.json
+setup_aws.ps1
+userdata.sh
