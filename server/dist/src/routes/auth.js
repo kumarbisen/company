@@ -25,9 +25,9 @@ router.post("/login", async (req, res) => {
     const token = jsonwebtoken_1.default.sign({ username, role: "admin" }, JWT_SECRET, { expiresIn: "1d" });
     res.json({ token, username });
 });
-// Simulated Gmail Login / Registration
+// user login flow
 router.post("/gmail-login", async (req, res) => {
-    const { email, name, avatar } = req.body;
+    const { email, name, avatar, firebaseUid, providerId, emailVerified } = req.body;
     if (!email || !name) {
         return res.status(400).json({ error: "Email and Name are required" });
     }
@@ -38,9 +38,23 @@ router.post("/gmail-login", async (req, res) => {
                 email,
                 name,
                 avatar: avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
+                firebaseUid,
+                providerId,
+                emailVerified: emailVerified || false,
             });
-            await user.save();
         }
+        else {
+            user.name = name;
+            if (avatar)
+                user.avatar = avatar;
+            if (firebaseUid)
+                user.firebaseUid = firebaseUid;
+            if (providerId)
+                user.providerId = providerId;
+            if (typeof emailVerified === "boolean")
+                user.emailVerified = emailVerified;
+        }
+        await user.save();
         const token = jsonwebtoken_1.default.sign({ id: user._id, email: user.email, name: user.name, role: "user" }, JWT_SECRET, { expiresIn: "30d" });
         res.json({ token, user });
     }

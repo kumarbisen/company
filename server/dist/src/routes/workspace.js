@@ -40,7 +40,6 @@ router.post("/brief", auth_1.requireUserAuth, async (req, res) => {
             details,
             submittedAt: new Date(),
         };
-        // Automatically add their primary goal as their first service in discussion
         const alreadyExists = user.services.find((s) => s.name === primaryGoal);
         if (!alreadyExists) {
             user.services.push({
@@ -51,6 +50,12 @@ router.post("/brief", auth_1.requireUserAuth, async (req, res) => {
             });
         }
         await user.save();
+        await new message_1.default({
+            message: `New brief submitted by ${user.name} (${user.email}) for ${companyName}. Goal: ${primaryGoal}`,
+            userId: user._id,
+            sender: "user",
+            isWorkspace: true,
+        }).save();
         res.json(user);
     }
     catch (err) {
