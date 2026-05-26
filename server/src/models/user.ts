@@ -28,11 +28,15 @@ export interface IUser extends Document {
   email: string
   name: string
   avatar?: string
+  firebaseUid?: string
+  providerId?: string
+  emailVerified?: boolean
   createdAt: Date
   brief?: IBrief
   services: IServiceItem[]
   payments: IPaymentRecord[]
 }
+
 
 const BriefSchema = new Schema<IBrief>({
   companyName: { type: String, required: true },
@@ -66,10 +70,14 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   avatar: { type: String },
+  firebaseUid: { type: String, index: true },
+  providerId: { type: String },
+  emailVerified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   brief: { type: BriefSchema },
   services: { type: [ServiceItemSchema], default: [] },
   payments: { type: [PaymentRecordSchema], default: [] },
 })
+
 
 export default mongoose.model<IUser>("User", UserSchema)

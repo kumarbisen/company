@@ -26,30 +26,54 @@ router.post("/login", async (req: Request, res: Response) => {
   res.json({ token, username })
 })
 
-// Simulated Gmail Login / Registration
+// user login flow
 router.post("/gmail-login", async (req: Request, res: Response) => {
-  const { email, name, avatar } = req.body as { email: string; name: string; avatar?: string }
+  const { email, name, avatar, firebaseUid, providerId, emailVerified } = req.body as {
+    email: string
+    name: string
+    avatar?: string
+    firebaseUid?: string
+    providerId?: string
+    emailVerified?: boolean
+  }
+
   if (!email || !name) {
     return res.status(400).json({ error: "Email and Name are required" })
   }
 
   try {
     let user = await User.findOne({ email })
+
     if (!user) {
       user = new User({
         email,
         name,
         avatar: avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
+        firebaseUid,
+        providerId,
+        emailVerified: emailVerified || false,
       })
-      await user.save()
+    } else {
+      user.name = name
+      if (avatar) user.avatar = avatar
+      if (firebaseUid) user.firebaseUid = firebaseUid
+      if (providerId) user.providerId = providerId
+      if (typeof emailVerified === "boolean") user.emailVerified = emailVerified
     }
-    const token = jwt.sign({ id: user._id, email: user.email, name: user.name, role: "user" }, JWT_SECRET, { expiresIn: "30d" })
+
+    await user.save()
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email, name: user.name, role: "user" },
+      JWT_SECRET,
+      { expiresIn: "30d" }
+    )
+
     res.json({ token, user })
   } catch (err: any) {
     res.status(500).json({ error: "Gmail login failed", details: err.message })
   }
 })
-
 // Get Admin Profile
 router.get("/me", requireAuth, (req: Request, res: Response) => {
   res.json({ user: (req as any).admin })

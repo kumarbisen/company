@@ -46,7 +46,6 @@ router.post("/brief", requireUserAuth, async (req: RequestWithUser, res: Respons
       submittedAt: new Date(),
     }
 
-    // Automatically add their primary goal as their first service in discussion
     const alreadyExists = user.services.find((s) => s.name === primaryGoal)
     if (!alreadyExists) {
       user.services.push({
@@ -58,12 +57,19 @@ router.post("/brief", requireUserAuth, async (req: RequestWithUser, res: Respons
     }
 
     await user.save()
+
+    await new Message({
+      message: `New brief submitted by ${user.name} (${user.email}) for ${companyName}. Goal: ${primaryGoal}`,
+      userId: user._id,
+      sender: "user",
+      isWorkspace: true,
+    }).save()
+
     res.json(user)
   } catch (err: any) {
     res.status(500).json({ error: "Failed to save brief", details: err.message })
   }
 })
-
 // Select a new service suite
 router.post("/services", requireUserAuth, async (req: RequestWithUser, res: Response) => {
   const { serviceName } = req.body as { serviceName: string }
