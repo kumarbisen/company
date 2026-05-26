@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react"
 import type { ReactNode } from "react"
 import { apiUrl } from "../../data/api"
+import { WorkspaceBriefIcon, WorkspaceServicesIcon, WorkspaceMessagesIcon, WorkspacePaymentsIcon } from "../../styles/Icons"
+import { servicePages } from "../../data/site"
 import * as styles from "./WorkspacePage.css"
 
 type Tab = "brief" | "services" | "messages" | "payments"
@@ -45,30 +47,6 @@ type ChatMessage = {
   createdAt: string
 }
 
-// Available services to buy
-const availableServices = [
-  {
-    name: "Web Development",
-    desc: "Build a modern, high-converting, responsive website with page speed optimization and integrated form flows.",
-    basePrice: 30000,
-  },
-  {
-    name: "App Development",
-    desc: "Launch your custom digital product or MVP. End-to-end frontend development, database engineering and launch readiness.",
-    basePrice: 45000,
-  },
-  {
-    name: "Social Media Management",
-    desc: "Plug in an active service pod to design content calendars, edit creatives, manage pages, and draft reporting weekly.",
-    basePrice: 25000,
-  },
-  {
-    name: "Marketing",
-    desc: "Optimize campaign spend with lead-capture landing pages, positioning audits, copy refinement, and active monitoring.",
-    basePrice: 35000,
-  },
-]
-
 // Dynamically load the Razorpay checkout script
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
@@ -99,6 +77,29 @@ export function WorkspacePage() {
   // Razorpay Checkout states
   const [checkoutService, setCheckoutService] = useState<{ name: string; price: number } | null>(null)
   const [paymentLoading, setPaymentLoading] = useState(false)
+
+  const workspaceNavItems = [
+    {
+      key: "brief",
+      label: "Brief & Progress",
+      icon: <WorkspaceBriefIcon width={16} height={16} />,
+    },
+    {
+      key: "services",
+      label: "Select Services",
+      icon: <WorkspaceServicesIcon width={16} height={16} />,
+    },
+    {
+      key: "messages",
+      label: "Messages Chat",
+      icon: <WorkspaceMessagesIcon width={16} height={16} />,
+    },
+    {
+      key: "payments",
+      label: "Payments Ledger",
+      icon: <WorkspacePaymentsIcon width={16} height={16} />,
+    },
+  ] as { key: Tab; label: string; icon: ReactNode }[]
 
   useEffect(() => {
     fetchWorkspace()
@@ -420,54 +421,7 @@ export function WorkspacePage() {
         <aside className={styles.sidebar}>
           <div className={styles.sidebarUpper}>
             <div className={styles.sidebarLabel}>Workspace Options</div>
-            {(
-              [
-                {
-                  key: "brief",
-                  label: "Brief & Progress",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M4 20V10" />
-                      <path d="M10 20V4" />
-                      <path d="M16 20v-6" />
-                      <path d="M22 20v-9" />
-                    </svg>
-                  ),
-                },
-                {
-                  key: "services",
-                  label: "Select Services",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M8 3h8l1 4-5 5-5-5 1-4Z" />
-                      <path d="M12 12v9" />
-                      <path d="M8 17h8" />
-                    </svg>
-                  ),
-                },
-                {
-                  key: "messages",
-                  label: "Messages Chat",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="3" y="5" width="18" height="14" rx="2" />
-                      <path d="m6 9 6 4 6-4" />
-                    </svg>
-                  ),
-                },
-                {
-                  key: "payments",
-                  label: "Payments Ledger",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="3" y="6" width="18" height="12" rx="2" />
-                      <path d="M3 11h18" />
-                      <path d="M7 15h3" />
-                    </svg>
-                  ),
-                },
-              ] as { key: Tab; label: string; icon: ReactNode }[]
-            ).map(({ key, label, icon }) => (
+            {workspaceNavItems.map(({ key, label, icon }) => (
               <button
                 key={key}
                 className={`${styles.sidebarItem} ${tab === key ? styles.sidebarItemActive : ""}`}
@@ -536,7 +490,7 @@ export function WorkspacePage() {
 
                   <div className={`${styles.timelineNode} ${m2Complete ? styles.timelineNodeComplete : ""} ${m2Complete ? "" : m1Complete ? styles.timelineNodeActive : ""}`}>
                     <span className={styles.nodeNum}>Phase 02</span>
-                    <span className={styles.nodeTitle}>Pod Scoping</span>
+                    <span className={styles.nodeTitle}>Payment Update</span>
                     <p className={styles.nodeDesc}>Experts assigned to draft execution frameworks.</p>
                     <span className={styles.nodeStatus} style={m2Complete ? { background: "#b8ff38" } : { background: "#ded9d1" }}>
                       {m2Complete ? "Completed" : "In Progress"}
@@ -600,7 +554,7 @@ export function WorkspacePage() {
               </div>
 
               <div className={styles.servicesGrid}>
-                {availableServices.map((serv) => {
+                {servicePages.map((serv) => {
                   // Check if this service is in workspace list
                   const added = workspace.services.find((s) => s.name === serv.name)
 
@@ -624,11 +578,12 @@ export function WorkspacePage() {
                         </button>
                       )
                     } else if (added.status === "Pending Payment") {
-                      badgeBg = "#dc2626"
+                      badgeBg = "#b8ff38"
                       badgeText = "#fff"
+                      const payablePrice = added.price
                       buttonEl = (
-                        <button className={styles.selectBtn} style={{ background: "#dc2626" }} onClick={() => triggerCheckout(serv.name, added.price)}>
-                          Pay with Razorpay (₹{added.price.toLocaleString("en-IN")})
+                        <button className={styles.selectBtn} style={{ background: "#b8ff38" }} onClick={() => triggerCheckout(serv.name, payablePrice)}>
+                          Pay with Razorpay (₹{payablePrice.toLocaleString("en-IN")})
                         </button>
                       )
                     } else if (added.status === "In Progress") {
@@ -661,13 +616,12 @@ export function WorkspacePage() {
                             </span>
                           )}
                         </div>
-                        <p className={styles.serviceDesc}>{serv.desc}</p>
+                        <p className={styles.serviceDesc}>{serv.description}</p>
                         
                         <div className={styles.servicePriceTag}>
                           <span className={styles.priceAmount}>
-                            ₹{(added?.price && added.price > 0 ? added.price : serv.basePrice).toLocaleString("en-IN")}
+                            {added ? (added.price > 0 ? `₹${added.price.toLocaleString("en-IN")}` : "Price set during discussion") : "No upfront price"}
                           </span>
-                          <span className={styles.pricePeriod}>/ project scope</span>
                         </div>
                       </div>
 
@@ -742,6 +696,52 @@ export function WorkspacePage() {
                 <h1 className={styles.panelTitle}>Payment History & Ledger</h1>
               </div>
 
+              <div className={styles.paymentActionsCard}>
+                <div className={styles.paymentActionsHeader}>
+                  <div>
+                    <div className={styles.paymentActionsLabel}>Outstanding Payments</div>
+                    <h2 className={styles.paymentActionsTitle}>Pay the price agreed during discussion</h2>
+                  </div>
+                  <div className={styles.paymentActionsHeaderRight}>
+                    <div className={styles.paymentActionsSummary}>
+                      ₹{workspace.services.filter((s) => s.status === "Pending Payment").reduce((sum, service) => sum + service.price, 0).toLocaleString("en-IN")}
+                    </div>
+                  </div>
+                </div>
+
+                {workspace.services.filter((s) => s.status === "Pending Payment").length === 0 ? (
+                  <div className={styles.emptyState} style={{ padding: "20px 0 0", textAlign: "left" }}>
+                    No services are currently marked as pending payment.
+                  </div>
+                ) : (
+                  <div className={styles.paymentActionsList}>
+                    {workspace.services
+                      .filter((s) => s.status === "Pending Payment")
+                      .map((service) => {
+                        const payablePrice = service.price
+
+                        return (
+                          <div key={service.name} className={styles.paymentActionItem}>
+                            <div>
+                              <div className={styles.paymentActionName}>{service.name}</div>
+                              <div className={styles.paymentActionMeta}>
+                                {payablePrice > 0 ? `Agreed amount: ₹${payablePrice.toLocaleString("en-IN")}` : "Awaiting admin price"}
+                              </div>
+                            </div>
+                            <button
+                              className={styles.selectBtn}
+                              style={{ minWidth: 190, background: "#dc2626", color: "#fff" }}
+                              onClick={() => triggerCheckout(service.name, payablePrice)}
+                            >
+                              Pay with Razorpay
+                            </button>
+                          </div>
+                        )
+                      })}
+                  </div>
+                )}
+              </div>
+
               <div className={styles.statsRow}>
                 <div className={styles.statCard}>
                   <div className={styles.statNum} style={{ color: "#b8ff38", textShadow: "0 0 1px #151515" }}>
@@ -754,7 +754,7 @@ export function WorkspacePage() {
                   <div className={styles.statLabel}>Invoices Cleared</div>
                 </div>
                 <div className={styles.statCard}>
-                  <div className={styles.statNum}>₹{(workspace.services.filter((s) => s.status === "Pending Payment").reduce((a, b) => a + b.price, 0)).toLocaleString("en-IN")}</div>
+                  <div className={styles.statNum}>₹{workspace.services.filter((s) => s.status === "Pending Payment").reduce((a, b) => a + b.price, 0).toLocaleString("en-IN")}</div>
                   <div className={styles.statLabel}>Due Payments</div>
                 </div>
               </div>
@@ -794,6 +794,21 @@ export function WorkspacePage() {
             </>
           )}
         </main>
+
+        <nav className={styles.mobileNav} aria-label="Workspace navigation">
+          {workspaceNavItems.map(({ key, label, icon }) => (
+            <button
+              key={key}
+              className={`${styles.mobileNavItem} ${tab === key ? styles.mobileNavItemActive : ""}`}
+              onClick={() => setTab(key)}
+              aria-current={tab === key ? "page" : undefined}
+              type="button"
+            >
+              <span className={styles.mobileNavIcon}>{icon}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* ─── REAL RAZORPAY CHECKOUT CONFIRMATION DRAWER ─── */}

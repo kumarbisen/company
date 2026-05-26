@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { navItems } from "../data/site"
 import { apiUrl } from "../data/api"
+import { MenuCloseIcon, MenuHamburgerIcon } from "../styles/Icons"
 import * as styles from "./Navigation.css"
 import { auth, googleProvider, isFirebaseConfigured, missingFirebaseConfigKeys } from "../config/firebase"
 import { getAdditionalUserInfo, signInWithPopup } from "firebase/auth"
@@ -240,20 +241,7 @@ export function Navigation() {
           onClick={() => setOpen((v) => !v)}
         >
           <span className={open ? styles.iconClose : styles.iconHamburger}>
-            {open ? (
-              /* X icon */
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-                <line x1="3" y1="3" x2="19" y2="19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-                <line x1="19" y1="3" x2="3" y2="19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-              </svg>
-            ) : (
-              /* Hamburger icon */
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-                <line x1="3" y1="6" x2="19" y2="6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-                <line x1="3" y1="11" x2="19" y2="11" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-                <line x1="3" y1="16" x2="19" y2="16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-              </svg>
-            )}
+            {open ? <MenuCloseIcon width={22} height={22} /> : <MenuHamburgerIcon width={22} height={22} />}
           </span>
         </button>
 

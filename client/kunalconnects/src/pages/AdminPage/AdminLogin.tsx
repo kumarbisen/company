@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from "react"
 import { apiUrl } from "../../data/api"
+import { ArrowRightIcon, ErrorAlertIcon, EyeIcon, EyeOffIcon } from "../../styles/Icons"
 import * as styles from "./AdminLogin.css"
 
 type Props = {
@@ -61,11 +62,7 @@ export function AdminLogin({ onLogin }: Props) {
         {/* Error banner */}
         {hasError && (
           <div className={styles.errorBanner} role="alert">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="7" stroke="#dc2626" strokeWidth="1.5" />
-              <path d="M8 4.5v4" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" />
-              <circle cx="8" cy="11" r="0.75" fill="#dc2626" />
-            </svg>
+            <ErrorAlertIcon width={16} height={16} style={{ color: "#dc2626" }} />
             {error}
           </div>
         )}
@@ -109,18 +106,7 @@ export function AdminLogin({ onLogin }: Props) {
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
-                {showPassword ? (
-                  /* Eye-off icon */
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M2 2l14 14M7.5 7.55A2 2 0 0110.45 10.5M5.3 5.32C3.68 6.3 2.4 7.8 1.5 9c1.5 2.5 4.2 5 7.5 5a7.3 7.3 0 003.7-1.02M12.7 12.68C14.32 11.7 15.6 10.2 16.5 9 15 6.5 12.3 4 9 4a7.3 7.3 0 00-3.7 1.02" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                  </svg>
-                ) : (
-                  /* Eye icon */
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M1.5 9C3 6.5 5.7 4 9 4s6 2.5 7.5 5c-1.5 2.5-4.2 5-7.5 5S3 11.5 1.5 9z" stroke="currentColor" strokeWidth="1.4" />
-                    <circle cx="9" cy="9" r="2" stroke="currentColor" strokeWidth="1.4" />
-                  </svg>
-                )}
+                {showPassword ? <EyeOffIcon width={18} height={18} /> : <EyeIcon width={18} height={18} />}
               </button>
             </div>
           </label>
@@ -139,9 +125,7 @@ export function AdminLogin({ onLogin }: Props) {
             ) : (
               <>
                 Sign in
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <ArrowRightIcon width={16} height={16} />
               </>
             )}
           </button>

@@ -90,6 +90,65 @@ export const sidebar = style({
   "@media": { "(max-width: 760px)": { display: "none" } },
 })
 
+export const mobileNav = style({
+  display: "none",
+  "@media": {
+    "(max-width: 760px)": {
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)",
+      gap: 0,
+      position: "fixed",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 20,
+      background: "rgba(255,255,255,0.96)",
+      backdropFilter: "blur(16px)",
+      borderTop: `1px solid ${tokens.line}`,
+      padding: "8px 8px calc(8px + env(safe-area-inset-bottom))",
+    },
+  },
+})
+
+export const mobileNavItem = style({
+  display: "none",
+  "@media": {
+    "(max-width: 760px)": {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      minHeight: 60,
+      border: "none",
+      background: "none",
+      color: tokens.muted,
+      fontSize: 11,
+      fontWeight: 700,
+      borderRadius: 10,
+      cursor: "pointer",
+      textAlign: "center",
+    },
+  },
+})
+
+export const mobileNavItemActive = style({
+  "@media": {
+    "(max-width: 760px)": {
+      color: tokens.ink,
+      background: tokens.paper,
+    },
+  },
+})
+
+export const mobileNavIcon = style({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: 18,
+  height: 18,
+})
+
 export const sidebarUpper = style({
   display: "flex",
   flexDirection: "column",
@@ -152,7 +211,7 @@ export const main = style({
   flex: 1,
   padding: "36px 40px",
   overflowY: "auto",
-  "@media": { "(max-width: 760px)": { padding: "24px 16px" } },
+  "@media": { "(max-width: 760px)": { padding: "24px 16px 104px" } },
 })
 
 export const panelHeader = style({
@@ -615,6 +674,82 @@ export const emptyState = style({
   textAlign: "center",
   color: tokens.muted,
   fontSize: 15,
+})
+
+export const paymentActionsCard = style({
+  background: tokens.surface,
+  border: `1px solid ${tokens.line}`,
+  borderRadius: 12,
+  padding: 24,
+  marginBottom: 24,
+})
+
+export const paymentActionsHeader = style({
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+  gap: 16,
+  marginBottom: 18,
+  flexWrap: "wrap",
+})
+
+export const paymentActionsHeaderRight = style({
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  flexWrap: "wrap",
+  justifyContent: "flex-end",
+})
+
+export const paymentActionsLabel = style({
+  fontSize: 10,
+  fontWeight: 800,
+  letterSpacing: "0.14em",
+  textTransform: "uppercase",
+  color: tokens.muted,
+  marginBottom: 6,
+})
+
+export const paymentActionsTitle = style({
+  fontSize: 18,
+  fontWeight: 800,
+  margin: 0,
+})
+
+export const paymentActionsSummary = style({
+  fontSize: 24,
+  fontWeight: 900,
+  color: tokens.ink,
+})
+
+export const paymentActionsList = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+})
+
+export const paymentActionItem = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 16,
+  padding: 16,
+  border: `1px solid ${tokens.line}`,
+  borderRadius: 10,
+  background: tokens.paper,
+  flexWrap: "wrap",
+})
+
+export const paymentActionName = style({
+  fontSize: 15,
+  fontWeight: 800,
+  marginBottom: 4,
+})
+
+export const paymentActionMeta = style({
+  fontSize: 12,
+  color: tokens.muted,
+  fontWeight: 600,
 })
 
 export const loginOverlay = style({

@@ -87,6 +87,65 @@ export const sidebar = style({
   "@media": { "(max-width: 700px)": { display: "none" } },
 })
 
+export const mobileNav = style({
+  display: "none",
+  "@media": {
+    "(max-width: 700px)": {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 0,
+      position: "fixed",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 20,
+      background: "rgba(255,255,255,0.96)",
+      backdropFilter: "blur(16px)",
+      borderTop: `1px solid ${tokens.line}`,
+      padding: "8px 8px calc(8px + env(safe-area-inset-bottom))",
+    },
+  },
+})
+
+export const mobileNavItem = style({
+  display: "none",
+  "@media": {
+    "(max-width: 700px)": {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      minHeight: 60,
+      border: "none",
+      background: "none",
+      color: tokens.muted,
+      fontSize: 11,
+      fontWeight: 700,
+      borderRadius: 10,
+      cursor: "pointer",
+      textAlign: "center",
+    },
+  },
+})
+
+export const mobileNavItemActive = style({
+  "@media": {
+    "(max-width: 700px)": {
+      color: tokens.ink,
+      background: tokens.paper,
+    },
+  },
+})
+
+export const mobileNavIcon = style({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: 18,
+  height: 18,
+})
+
 export const sidebarLabel = style({
   padding: "0 20px 8px",
   fontSize: 10,
@@ -126,7 +185,7 @@ export const main = style({
   flex: 1,
   padding: "36px 40px",
   overflowY: "auto",
-  "@media": { "(max-width: 700px)": { padding: "24px 16px" } },
+  "@media": { "(max-width: 700px)": { padding: "24px 16px 104px" } },
 })
 
 export const panelHeader = style({

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import type { ReactNode } from "react"
 import { AdminLogin } from "./AdminLogin"
 import { apiUrl } from "../../data/api"
+import { WorkspaceBriefIcon, WorkspaceServicesIcon, WorkspacePaymentsIcon } from "../../styles/Icons"
 import * as styles from "./AdminPage.css"
 
 /* ─── Types ─────────────────────────────────────────────────── */
@@ -20,18 +21,6 @@ type FeedItem = {
   meta: string
   text: string
 }
-
-// Commented out as currently unused but kept for future message panel work
-/*
-type Message = {
-  _id: string
-  name: string
-  email: string
-  message: string
-  read: boolean
-  createdAt: string
-}
-*/
 
 type ServiceItem = {
   name: string
@@ -114,6 +103,24 @@ export function AdminPage() {
   const [editingService, setEditingService] = useState<string | null>(null)
   const [servicePrice, setServicePrice] = useState(0)
   const [serviceStatus, setServiceStatus] = useState<any>("In Discussion")
+
+  const adminNavItems = [
+    {
+      key: "stories",
+      label: "Top Stories",
+                icon: <WorkspaceBriefIcon width={16} height={16} />,
+    },
+    {
+      key: "feed",
+      label: "Live Feed",
+                icon: <WorkspaceServicesIcon width={16} height={16} />,
+    },
+    {
+      key: "clients",
+      label: "Client Workspaces",
+                icon: <WorkspacePaymentsIcon width={16} height={16} />,
+    },
+  ] as { key: Tab; label: string; icon: ReactNode }[]
 
   useEffect(() => {
     // Check local storage for token
@@ -245,46 +252,6 @@ export function AdminPage() {
     }
   }
 
-  // --- Messages & Clients ---
-  // Commented out as currently unused but kept for future message panel work
-  /*
-  async function fetchMessages() {
-    try {
-      const resp = await fetch(apiUrl("/api/messages"), { headers })
-      if (resp.ok) setMessages(await resp.json())
-    } catch (err) {
-      console.error(err)
-    }
-  }
-  */
-
-  // Commented out as currently unused but kept for future message panel work
-  /*
-  async function handleMarkMessageRead(id: string) {
-    try {
-      const resp = await fetch(apiUrl(`/api/messages/${id}/read`), {
-        method: "PATCH",
-        headers,
-      })
-      if (resp.ok) fetchMessages()
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  async function handleDeleteMessage(id: string) {
-    if (!confirm("Delete this message inquiry?")) return
-    try {
-      const resp = await fetch(apiUrl(`/api/messages/${id}`), {
-        method: "DELETE",
-        headers,
-      })
-      if (resp.ok) fetchMessages()
-    } catch (err) {
-      console.error(err)
-    }
-  }
-  */
 
   async function fetchClients() {
     try {
@@ -393,45 +360,7 @@ export function AdminPage() {
         {/* ── Sidebar ── */}
         <aside className={styles.sidebar}>
           <div className={styles.sidebarLabel}>Manage</div>
-          {(
-            [
-              {
-                key: "stories",
-                label: "Top Stories",
-                icon: (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <rect x="4" y="4" width="16" height="16" rx="2" />
-                    <path d="M8 9h8" />
-                    <path d="M8 13h5" />
-                    <path d="M8 17h8" />
-                  </svg>
-                ),
-              },
-              {
-                key: "feed",
-                label: "Live Feed",
-                icon: (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 16c2.4-2.4 4.6-4.6 8-8" />
-                    <path d="m11 8 2-2a3 3 0 0 1 4 4l-2 2" />
-                    <path d="M7 18a2 2 0 1 1-2-2 2 2 0 0 1 2 2Z" />
-                    <path d="m14 11 3 3" />
-                  </svg>
-                ),
-              },
-              {
-                key: "clients",
-                label: "Client Workspaces",
-                icon: (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <rect x="3" y="6" width="18" height="14" rx="2" />
-                    <path d="M9 6V4h6v2" />
-                    <path d="M3 12h18" />
-                  </svg>
-                ),
-              },
-            ] as { key: Tab; label: string; icon: ReactNode }[]
-          ).map(({ key, label, icon }) => (
+          {adminNavItems.map(({ key, label, icon }) => (
             <button
               key={key}
               className={`${styles.sidebarItem} ${tab === key ? styles.sidebarItemActive : ""}`}
@@ -814,6 +743,24 @@ export function AdminPage() {
             </div>
           )}
         </main>
+
+        <nav className={styles.mobileNav} aria-label="Admin navigation">
+          {adminNavItems.map(({ key, label, icon }) => (
+            <button
+              key={key}
+              className={`${styles.mobileNavItem} ${tab === key ? styles.mobileNavItemActive : ""}`}
+              onClick={() => {
+                setTab(key)
+                setSelectedClient(null)
+              }}
+              aria-current={tab === key ? "page" : undefined}
+              type="button"
+            >
+              <span className={styles.mobileNavIcon}>{icon}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* ── Story modal ── */}
