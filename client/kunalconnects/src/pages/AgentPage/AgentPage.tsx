@@ -89,6 +89,7 @@ export function AgentPage() {
         // Clear stored credentials
         localStorage.removeItem("user_token")
         localStorage.removeItem("user_profile")
+        localStorage.removeItem("firebase_id_token")
         // Notify user and open login modal
         setError("Session expired. Please sign in again.")
         window.dispatchEvent(new Event("open-google-login"))

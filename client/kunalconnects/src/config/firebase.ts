@@ -1,0 +1,34 @@
+import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app"
+import { getAuth, GoogleAuthProvider } from "firebase/auth"
+
+const firebaseConfig: FirebaseOptions = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+}
+
+const firebaseConfigEntries = Object.entries(firebaseConfig) as Array<[keyof FirebaseOptions, string | undefined]>
+export const missingFirebaseConfigKeys = firebaseConfigEntries
+  .filter(([, value]) => !value)
+  .map(([key]) => `VITE_FIREBASE_${String(key).replace(/[A-Z]/g, (letter) => `_${letter}`).toUpperCase()}`)
+
+export const isFirebaseConfigured = missingFirebaseConfigKeys.length === 0
+
+const app = isFirebaseConfigured && getApps().length === 0
+  ? initializeApp(firebaseConfig)
+  : isFirebaseConfigured
+    ? getApp()
+    : null
+
+export const auth = app ? getAuth(app) : null
+export const googleProvider = app ? new GoogleAuthProvider() : null
+
+if (googleProvider) {
+  googleProvider.addScope("email")
+  googleProvider.addScope("profile")
+}
+
+export { firebaseConfig }

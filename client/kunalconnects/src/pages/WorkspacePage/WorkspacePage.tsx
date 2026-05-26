@@ -68,6 +68,21 @@ const availableServices = [
   },
 ]
 
+// Dynamically load the Razorpay checkout script
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if ((window as any).Razorpay) {
+      resolve(true)
+      return
+    }
+    const script = document.createElement("script")
+    script.src = "https://checkout.razorpay.com/v1/checkout.js"
+    script.onload = () => resolve(true)
+    script.onerror = () => resolve(false)
+    document.body.appendChild(script)
+  })
+}
+
 export function WorkspacePage() {
   const [tab, setTab] = useState<Tab>("brief")
   const [workspace, setWorkspace] = useState<UserWorkspace | null>(null)
@@ -80,10 +95,9 @@ export function WorkspacePage() {
   const [sendingMsg, setSendingMsg] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Razorpay Checkout Simulation states
+  // Razorpay Checkout states
   const [checkoutService, setCheckoutService] = useState<{ name: string; price: number } | null>(null)
   const [paymentLoading, setPaymentLoading] = useState(false)
-  const [selectedPayMethod, setSelectedPayMethod] = useState<"card" | "upi" | "netbanking">("upi")
 
   useEffect(() => {
     fetchWorkspace()
@@ -120,6 +134,11 @@ export function WorkspacePage() {
         const data = await resp.json()
         setWorkspace(data)
       } else {
+        if (resp.status === 401 || resp.status === 403) {
+          localStorage.removeItem("user_token")
+          localStorage.removeItem("user_profile")
+          localStorage.removeItem("firebase_id_token")
+        }
         setError("Failed to load workspace data.")
       }
     } catch (err) {
@@ -199,12 +218,20 @@ export function WorkspacePage() {
     setCheckoutService({ name, price })
   }
 
-  async function completePaymentSimulation() {
+  async function handleRazorpayCheckout() {
     if (!checkoutService || !token || !workspace) return
     setPaymentLoading(true)
 
-    // Simulate order creation in backend
     try {
+      // 1. Dynamically load the Razorpay checkout script
+      const scriptLoaded = await loadRazorpayScript()
+      if (!scriptLoaded) {
+        alert("Failed to load Razorpay Checkout SDK. Please check your network connection.")
+        setPaymentLoading(false)
+        return
+      }
+
+      // 2. Call backend order endpoint to create real Razorpay Order
       const orderResp = await fetch(apiUrl("/api/payments/order"), {
         method: "POST",
         headers: {
@@ -213,13 +240,25 @@ export function WorkspacePage() {
         },
         body: JSON.stringify({ amount: checkoutService.price, serviceName: checkoutService.name }),
       })
+
+      if (!orderResp.ok) {
+        throw new Error("Failed to create Razorpay order on backend")
+      }
+
       const orderData = await orderResp.json()
 
-      if (orderResp.ok) {
-        // Simulate short gateway processing delay
-        setTimeout(async () => {
+      // 3. Initialize Razorpay options and open checkout modal
+      const options = {
+        key: orderData.key_id,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "KunalConnects",
+        description: `Payment for ${checkoutService.name}`,
+        order_id: orderData.id,
+        handler: async function (response: any) {
+          setPaymentLoading(true)
           try {
-            const payId = `pay_${Math.random().toString(36).substring(2, 12).toUpperCase()}`
+            // 4. Verify payment signature on backend
             const verifyResp = await fetch(apiUrl("/api/payments/verify"), {
               method: "POST",
               headers: {
@@ -227,8 +266,9 @@ export function WorkspacePage() {
                 Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
-                paymentId: payId,
-                orderId: orderData.id,
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
                 serviceName: checkoutService.name,
                 amount: checkoutService.price,
               }),
@@ -239,16 +279,37 @@ export function WorkspacePage() {
               setWorkspace(verifyData.user)
               setCheckoutService(null)
               setTab("payments") // Navigate to payments to see ledger
+            } else {
+              const errBody = await verifyResp.json()
+              alert(`Payment verification failed: ${errBody.error || "Please try again."}`)
             }
-          } catch (err) {
-            console.error("Verification failed", err)
+          } catch (err: any) {
+            console.error("Verification error:", err)
+            alert("Verification network error. Payment could not be validated.")
           } finally {
             setPaymentLoading(false)
           }
-        }, 1200)
+        },
+        prefill: {
+          name: workspace.name,
+          email: workspace.email,
+          contact: workspace.brief?.phone || "",
+        },
+        theme: {
+          color: "#b8ff38", // KunalConnects bright neon signature accent
+        },
+        modal: {
+          ondismiss: function () {
+            setPaymentLoading(false)
+          },
+        },
       }
-    } catch (err) {
-      console.error("Gateway error", err)
+
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
+    } catch (err: any) {
+      console.error("Razorpay integration error:", err)
+      alert(`Gateway connection error: ${err.message}`)
       setPaymentLoading(false)
     }
   }
@@ -691,7 +752,7 @@ export function WorkspacePage() {
         </main>
       </div>
 
-      {/* ─── RAZORPAY SANDBOX CHECKOUT GATEWAY DRAWER ─── */}
+      {/* ─── REAL RAZORPAY CHECKOUT CONFIRMATION DRAWER ─── */}
       {checkoutService && (
         <div className={styles.loginOverlay} style={{ zIndex: 1200 }} onClick={() => !paymentLoading && setCheckoutService(null)}>
           <div className={styles.loginModal} style={{ padding: 0, overflow: "hidden", maxWidth: 400 }} onClick={(e) => e.stopPropagation()}>
@@ -700,10 +761,10 @@ export function WorkspacePage() {
             <div style={{ background: "#151515", color: "#fff", padding: "24px 28px", width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: 17, fontFamily: '"Space Grotesk", sans-serif' }}>KunalConnects</h3>
-                <span style={{ fontSize: 12, opacity: 0.7 }}>Razorpay Sandbox Gate</span>
+                <span style={{ fontSize: 12, opacity: 0.7 }}>Secure Checkout</span>
               </div>
               <div style={{ background: "#b8ff38", color: "#151515", fontSize: 10, fontWeight: 800, padding: "3px 8px", borderRadius: 4 }}>
-                TEST MODE
+                SECURE GATEWAY
               </div>
             </div>
 
@@ -716,56 +777,23 @@ export function WorkspacePage() {
                 </div>
               </div>
 
-              <div style={{ borderTop: "1px solid #ded9d1", paddingTop: 16, marginBottom: 20 }}>
-                <span style={{ fontSize: 12, color: "#6f6a62", fontWeight: 700, display: "block", marginBottom: 10 }}>Select Payment Mode</span>
-                
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
-                  }}
-                >
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      padding: "10px 14px",
-                      border: `1px solid ${selectedPayMethod === "upi" ? "#151515" : "#ded9d1"}`,
-                      borderRadius: 8,
-                      background: selectedPayMethod === "upi" ? "#fffdf9" : "transparent",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                    }}
-                  >
-                    <input type="radio" checked={selectedPayMethod === "upi"} onChange={() => setSelectedPayMethod("upi")} disabled={paymentLoading} />
-                    UPI / GooglePay / PhonePe
-                  </label>
-
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      padding: "10px 14px",
-                      border: `1px solid ${selectedPayMethod === "card" ? "#151515" : "#ded9d1"}`,
-                      borderRadius: 8,
-                      background: selectedPayMethod === "card" ? "#fffdf9" : "transparent",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                    }}
-                  >
-                    <input type="radio" checked={selectedPayMethod === "card"} onChange={() => setSelectedPayMethod("card")} disabled={paymentLoading} />
-                    Credit / Debit Card (Simulated)
-                  </label>
+              <div style={{ borderTop: "1px solid #ded9d1", paddingTop: 16, marginBottom: 24 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <span style={{ fontSize: 24 }}>🛡️</span>
+                  <div>
+                    <span style={{ fontSize: 13, fontWeight: 700, display: "block", color: "#151515" }}>Razorpay Secured Checkout</span>
+                    <span style={{ fontSize: 12, color: "#6f6a62", display: "block" }}>All major cards, UPI, netbanking and wallets supported.</span>
+                  </div>
+                </div>
+                <div style={{ background: "#fffdec", border: "1px dashed #eab308", padding: "10px 14px", borderRadius: 8, fontSize: 12, color: "#854d0e", fontWeight: 600 }}>
+                  💡 Secure payments are encrypted and verified automatically.
                 </div>
               </div>
 
               <button
                 className={styles.loginSubmitBtn}
                 style={{ height: 48, background: "#151515", borderRadius: 24 }}
-                onClick={completePaymentSimulation}
+                onClick={handleRazorpayCheckout}
                 disabled={paymentLoading}
               >
                 {paymentLoading ? (
@@ -780,7 +808,7 @@ export function WorkspacePage() {
                         animation: "spin 1s linear infinite",
                       }}
                     />
-                    Authorizing Sandbox transaction…
+                    Initiating Secure Gate…
                   </>
                 ) : (
                   `Pay ₹${checkoutService.price.toLocaleString("en-IN")}`

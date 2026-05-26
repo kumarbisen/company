@@ -2,22 +2,32 @@ import { useState, useEffect } from "react"
 import { navItems } from "../data/site"
 import { apiUrl } from "../data/api"
 import * as styles from "./Navigation.css"
+import { auth, googleProvider, isFirebaseConfigured, missingFirebaseConfigKeys } from "../config/firebase"
+import { getAdditionalUserInfo, signInWithPopup } from "firebase/auth"
 
 type UserProfile = {
   email: string
   name: string
   avatar?: string
+  uid?: string
+  providerId?: string
+  emailVerified?: boolean
+  lastSignInAt?: string
+  isNewUser?: boolean
 }
 
 export function Navigation() {
   const [open, setOpen] = useState(false)
   const [openLogin, setOpenLogin] = useState(false)
-  const [customName, setCustomName] = useState("")
-  const [customEmail, setCustomEmail] = useState("")
   
   // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<UserProfile | null>(null)
+
+  // Firebase Auth integration states
+  const [showDevFallback, setShowDevFallback] = useState(false)
+  const [authErrorMsg, setAuthErrorMsg] = useState("")
+  const [isAuthLoading, setIsAuthLoading] = useState(false)
 
   useEffect(() => {
     // Check if token exists
@@ -35,32 +45,92 @@ export function Navigation() {
 
     // Listen to global sign-in event
     function triggerLogin() {
-      setOpenLogin(true)
+      triggerFirebaseLogin()
     }
     window.addEventListener("open-google-login", triggerLogin)
     return () => window.removeEventListener("open-google-login", triggerLogin)
   }, [])
 
-  async function handleGoogleLogin(email: string, name: string) {
+  async function triggerFirebaseLogin() {
+    setIsAuthLoading(true)
+    setAuthErrorMsg("")
+    setShowDevFallback(false)
+
+    if (!isFirebaseConfigured || !auth || !googleProvider) {
+      const missingKeys = missingFirebaseConfigKeys.join(", ")
+      setAuthErrorMsg(
+        missingKeys
+          ? `Missing Firebase environment variables: ${missingKeys}`
+          : "Firebase environment variables are missing."
+      )
+      setShowDevFallback(true)
+      setOpenLogin(true)
+      setIsAuthLoading(false)
+      return
+    }
+
+    try {
+      // 1. Open Google Sign-In Popup using Firebase Auth
+      const result = await signInWithPopup(auth, googleProvider)
+      const firebaseUser = result.user
+      const additionalInfo = getAdditionalUserInfo(result)
+
+      if (firebaseUser && firebaseUser.email) {
+        // 2. Synchronize details with our existing backend database session
+        await handleGoogleLogin(
+          {
+            email: firebaseUser.email,
+            name: firebaseUser.displayName || "Google User",
+            avatar: firebaseUser.photoURL || "",
+            uid: firebaseUser.uid,
+            providerId: firebaseUser.providerData[0]?.providerId || firebaseUser.providerId || "google.com",
+            emailVerified: firebaseUser.emailVerified,
+            lastSignInAt: firebaseUser.metadata.lastSignInTime || undefined,
+            isNewUser: additionalInfo?.isNewUser || false,
+          },
+          await firebaseUser.getIdToken()
+        )
+      } else {
+        throw new Error("Could not retrieve user email from Google account.")
+      }
+    } catch (err: any) {
+      console.warn("Firebase Google Sign-In popup could not complete. Providing sandbox developer fallback...", err)
+      setAuthErrorMsg(err.message || "Authentication error occurred.")
+      setShowDevFallback(true)
+      setOpenLogin(true) // Open fallback modal dialog to guide the developer/user
+    } finally {
+      setIsAuthLoading(false)
+    }
+  }
+
+  async function handleGoogleLogin(firebaseProfile: UserProfile, firebaseIdToken: string) {
     const fallbackUser = {
-      email,
-      name,
-      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
+      ...firebaseProfile,
+      avatar: firebaseProfile.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(firebaseProfile.name)}`,
     }
 
     try {
       const res = await fetch(apiUrl("/api/auth/gmail-login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name }),
+        body: JSON.stringify({
+          email: firebaseProfile.email,
+          name: firebaseProfile.name,
+          avatar: firebaseProfile.avatar,
+          firebaseIdToken,
+          firebaseUid: firebaseProfile.uid,
+          providerId: firebaseProfile.providerId,
+          emailVerified: firebaseProfile.emailVerified,
+        }),
       })
 
       const data = await res.json().catch(() => null)
       const userData = data?.user || fallbackUser
-      const token = data?.token || `mock_${btoa(`${email}:${Date.now()}`).replace(/=+$/g, "")}`
+      const token = data?.token || `mock_${btoa(`${firebaseProfile.email}:${Date.now()}`).replace(/=+$/g, "")}`
 
       localStorage.setItem("user_token", token)
       localStorage.setItem("user_profile", JSON.stringify(userData))
+      localStorage.setItem("firebase_id_token", firebaseIdToken)
       setIsLoggedIn(true)
       setUser(userData)
       setOpenLogin(false)
@@ -73,11 +143,12 @@ export function Navigation() {
         window.location.href = "/workspace"
       }
     } catch (err) {
-      console.error("Simulated Gmail login failed, using local fallback", err)
+      console.error("Gmail database synchronization failed, using local fallback session", err)
 
-      const token = `mock_${btoa(`${email}:${Date.now()}`).replace(/=+$/g, "")}`
+      const token = `mock_${btoa(`${firebaseProfile.email}:${Date.now()}`).replace(/=+$/g, "")}`
       localStorage.setItem("user_token", token)
       localStorage.setItem("user_profile", JSON.stringify(fallbackUser))
+      localStorage.setItem("firebase_id_token", firebaseIdToken)
       setIsLoggedIn(true)
       setUser(fallbackUser)
       setOpenLogin(false)
@@ -92,6 +163,7 @@ export function Navigation() {
   function handleLogout() {
     localStorage.removeItem("user_token")
     localStorage.removeItem("user_profile")
+    localStorage.removeItem("firebase_id_token")
     setIsLoggedIn(false)
     setUser(null)
     window.location.href = "/"
@@ -149,7 +221,7 @@ export function Navigation() {
               <button
                 className={styles.logoutBtn}
                 style={{ color: "inherit", fontWeight: 600, marginRight: 8 }}
-                onClick={() => setOpenLogin(true)}
+                onClick={triggerFirebaseLogin}
               >
                 Sign in
               </button>
@@ -225,7 +297,7 @@ export function Navigation() {
                     style={{ width: "100%", background: "none", border: "1px solid", color: "inherit", marginBottom: 6 }}
                     onClick={() => {
                       setOpen(false)
-                      setOpenLogin(true)
+                      triggerFirebaseLogin()
                     }}
                   >
                     Sign in
@@ -243,75 +315,46 @@ export function Navigation() {
         )}
       </header>
 
-      {/* ─── SIMULATED GOOGLE SIGN-IN MODAL ─── */}
-      {openLogin && (
+      {/* ─── AUTH GATE LOADING OVERLAY ─── */}
+      {isAuthLoading && (
+        <div className={styles.loginOverlay} style={{ zIndex: 9999 }}>
+          <div style={{ textAlign: "center", color: "#151515", fontFamily: '"Space Grotesk", sans-serif' }}>
+            <div style={{ width: 48, height: 48, border: "4px solid #151515", borderTopColor: "#b8ff38", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 16px" }} />
+            <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Connecting to Google Auth…</h3>
+            <span style={{ fontSize: 13, color: "#6f6a62" }}>Please complete sign in on the popup window</span>
+            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+          </div>
+        </div>
+      )}
+
+      {/* ─── FIREBASE CONFIGURATION FALLBACK DIALOG ─── */}
+      {openLogin && showDevFallback && (
         <div className={styles.loginOverlay} onClick={() => setOpenLogin(false)}>
           <div className={styles.loginModal} onClick={(e) => e.stopPropagation()}>
-            {/* Google G logo */}
-            <svg className={styles.googleLogo} viewBox="0 0 24 24" width="42" height="42" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.85z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
+            {/* Warning Icon / Error header */}
+            <div style={{ fontSize: 42, marginBottom: 12 }}>⚠️</div>
+            <h2 className={styles.loginTitle} style={{ fontSize: 20 }}>Firebase Configuration Required</h2>
+            <p className={styles.loginSubtitle} style={{ color: "#b91c1c", fontWeight: 700, margin: "0 0 16px", fontSize: 13.5 }}>
+              Configure the Firebase environment variables in your client `.env` file to enable real Google Sign-In.
+            </p>
 
-            <h2 className={styles.loginTitle}>Sign in with Google</h2>
-            <p className={styles.loginSubtitle}>Choose a simulated Gmail account to jump into your workspace workspace instantly.</p>
-
-            {/* Simulated accounts */}
-            <button type="button" className={styles.mockAccountItem} onClick={() => handleGoogleLogin("kumar.bisen@gmail.com", "Kumar Bisen")}>
-              <div className={styles.avatar}>KB</div>
-              <div className={styles.mockAccountInfo}>
-                <span className={styles.mockAccountName}>Kumar Bisen</span>
-                <span className={styles.mockAccountEmail}>kumar.bisen@gmail.com</span>
-              </div>
-            </button>
-
-            <button type="button" className={styles.mockAccountItem} onClick={() => handleGoogleLogin("aarav.singh@gmail.com", "Aarav Singh")}>
-              <div className={styles.avatar}>AS</div>
-              <div className={styles.mockAccountInfo}>
-                <span className={styles.mockAccountName}>Aarav Singh</span>
-                <span className={styles.mockAccountEmail}>aarav.singh@gmail.com</span>
-              </div>
-            </button>
-
-            <div className={styles.orDivider}>
-              <span className={styles.orDividerSpan}>Or use any custom email</span>
+            <div style={{ background: "#f6f3ee", padding: "14px 16px", borderRadius: 10, fontSize: 12, color: "#4b5563", marginBottom: 20, textAlign: "left", lineHeight: 1.5, border: "1px solid #ded9d1" }}>
+              <strong style={{ color: "#151515", display: "block", marginBottom: 6 }}>Add these VITE keys to client `.env`:</strong>
+              <pre style={{ margin: 0, fontFamily: "monospace", fontSize: 11, background: "#fff", padding: 10, borderRadius: 6, border: "1px solid #ded9d1", overflowX: "auto", color: "#1f2937" }}>
+{`VITE_FIREBASE_API_KEY=AIzaSy...
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
+VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef1234567890`}
+              </pre>
+              <small style={{ display: "block", marginTop: 8, color: "#6f6a62", fontStyle: "italic" }}>
+                Error detail: {authErrorMsg}
+              </small>
             </div>
 
-            {/* Custom account input */}
-            <form
-              className={styles.customLoginForm}
-              onSubmit={(e) => {
-                e.preventDefault()
-                if (customEmail && customName) {
-                  handleGoogleLogin(customEmail.trim(), customName.trim())
-                }
-              }}
-            >
-              <input
-                className={styles.loginInput}
-                type="text"
-                placeholder="Full Name"
-                required
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-              />
-              <input
-                className={styles.loginInput}
-                type="email"
-                placeholder="Gmail Address (e.g. name@gmail.com)"
-                required
-                value={customEmail}
-                onChange={(e) => setCustomEmail(e.target.value)}
-              />
-              <button className={styles.loginSubmitBtn} type="submit" disabled={!customName || !customEmail}>
-                Continue with Custom Account
-              </button>
-            </form>
-
-            <button type="button" className={styles.loginCancelBtn} onClick={() => setOpenLogin(false)}>
-              Cancel
+            <button type="button" className={styles.loginCancelBtn} style={{ width: "100%" }} onClick={() => setOpenLogin(false)}>
+              Close and configure
             </button>
           </div>
         </div>

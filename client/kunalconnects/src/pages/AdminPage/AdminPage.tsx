@@ -20,6 +20,8 @@ type FeedItem = {
   text: string
 }
 
+// Commented out as currently unused but kept for future message panel work
+/*
 type Message = {
   _id: string
   name: string
@@ -28,6 +30,7 @@ type Message = {
   read: boolean
   createdAt: string
 }
+*/
 
 type ServiceItem = {
   name: string
@@ -88,7 +91,8 @@ export function AdminPage() {
   // API Lists
   const [stories, setStories] = useState<Story[]>([])
   const [feed, setFeed] = useState<FeedItem[]>([])
-  const [messages, setMessages] = useState<Message[]>([])
+  // Commented out as currently unused but kept for future message panel work
+  // const [messages, setMessages] = useState<Message[]>([])
   const [clients, setClients] = useState<ClientWorkspace[]>([])
 
   // Modal / Draft states
@@ -122,7 +126,8 @@ export function AdminPage() {
     if (authed) {
       fetchStories()
       fetchFeed()
-      fetchMessages()
+      // Commented out as currently unused but kept for future message panel work
+      // fetchMessages()
       fetchClients()
     }
   }, [authed])
@@ -240,6 +245,8 @@ export function AdminPage() {
   }
 
   // --- Messages & Clients ---
+  // Commented out as currently unused but kept for future message panel work
+  /*
   async function fetchMessages() {
     try {
       const resp = await fetch(apiUrl("/api/messages"), { headers })
@@ -248,7 +255,10 @@ export function AdminPage() {
       console.error(err)
     }
   }
+  */
 
+  // Commented out as currently unused but kept for future message panel work
+  /*
   async function handleMarkMessageRead(id: string) {
     try {
       const resp = await fetch(apiUrl(`/api/messages/${id}/read`), {
@@ -273,6 +283,7 @@ export function AdminPage() {
       console.error(err)
     }
   }
+  */
 
   async function fetchClients() {
     try {
@@ -347,7 +358,8 @@ export function AdminPage() {
     setAuthed(true)
   }
 
-  const unreadCount = messages.filter((m) => !m.read).length
+  // Commented out as currently unused but kept for future message panel work
+  // const unreadCount = messages.filter((m) => !m.read).length
 
   if (!authed) return <AdminLogin onLogin={handleLoginSuccess} />
 
