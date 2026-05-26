@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
-import { topStories as fallbackStories } from "../../data/site"
 import { apiUrl } from "../../data/api"
 import * as styles from "./TopStories.css"
 
 export function TopStories() {
-  const [stories, setStories] = useState<any[]>(fallbackStories)
+  const [stories, setStories] = useState<any[]>([])
   const [index, setIndex] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch(apiUrl("/api/stories"))
@@ -17,20 +17,26 @@ export function TopStories() {
         if (Array.isArray(data) && data.length > 0) {
           setStories(data)
         }
+        setLoading(false)
       })
-      .catch((err) => console.log("Failed to fetch stories from server, using site data fallback", err))
+      .catch((err) => {
+        console.log("Failed to fetch stories from server", err)
+        setLoading(false)
+      })
   }, [])
 
   const total = stories.length
   const story = stories[index]
-  const [title, setTitle] = useState(story?.title || "")
-  const [excerpt, setExcerpt] = useState(story?.excerpt || "")
+  const [title, setTitle] = useState("")
+  const [excerpt, setExcerpt] = useState("")
 
-  // Sync state whenever story changes
   useEffect(() => {
     if (story) {
       setTitle(story.title)
       setExcerpt(story.excerpt || "")
+    } else {
+      setTitle("")
+      setExcerpt("")
     }
   }, [story])
 
@@ -56,7 +62,8 @@ export function TopStories() {
     return () => controller.abort()
   }, [story?.link])
 
-  if (!story) return null
+  if (loading) return <section className={styles.section}><div className={styles.topBar}>Loading stories…</div></section>
+  if (!story) return <section className={styles.section}><div className={styles.topBar}>No stories available</div></section>
 
   return (
     <section className={styles.section}>
