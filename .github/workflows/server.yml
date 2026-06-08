@@ -22,7 +22,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           source: "server/"
-          target: "/home/ubuntu/app"
+          target: "/home/ubuntu"
 
       - name: Install dependencies and restart PM2
         uses: appleboy/ssh-action@v1.0.3
@@ -35,15 +35,14 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             
-            # The files are copied to /home/ubuntu/app/server
-            cd /home/ubuntu/app/server
+            # Navigate to server workspace
+            cd /home/ubuntu/server
             
-            # If .env does not exist, create a dummy one for now
-            if [ ! -f .env ]; then
-              echo "PORT=3000" > .env
-            fi
+            # Write server .env securely from secret
+            echo "${{ secrets.SERVER_ENV }}" > .env
             
             npm install
             npm run build
-            pm2 restart server || pm2 start dist/src/index.js --name "server"
+            pm2 delete kunalconnects-server 2>/dev/null || true
+            pm2 start dist/src/index.js --name "kunalconnects-server"
             pm2 save
