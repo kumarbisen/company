@@ -32,15 +32,16 @@ jobs:
         run: |
           KEY_FILE="$RUNNER_TEMP/ec2_key"
           RAW_KEY="${{ secrets.EC2_PRIVATE_KEY }}"
-          printf '%s' "$RAW_KEY" | sed 's/\\n/\n/g' | tr -d '\r' > "$KEY_FILE"
+          printf '%s\n' "$RAW_KEY" | sed 's/\\n/\n/g' | tr -d '\r' > "$KEY_FILE"
+          
+          # If the user omitted the header/footer when pasting, wrap it!
           if ! grep -q "BEGIN .*PRIVATE KEY" "$KEY_FILE"; then
-            if printf '%s' "$RAW_KEY" | tr -d '\r\n' | base64 --decode 2>/dev/null | tr -d '\r' > "$KEY_FILE" && grep -q "BEGIN .*PRIVATE KEY" "$KEY_FILE"; then
-              :
-            else
-              echo "::error::EC2_PRIVATE_KEY appears invalid. Use a PEM/OpenSSH private key (plain or base64-encoded)."
-              exit 1
-            fi
+            echo "-----BEGIN RSA PRIVATE KEY-----" > "$KEY_FILE.tmp"
+            cat "$KEY_FILE" >> "$KEY_FILE.tmp"
+            echo "-----END RSA PRIVATE KEY-----" >> "$KEY_FILE.tmp"
+            mv "$KEY_FILE.tmp" "$KEY_FILE"
           fi
+          
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "EC2_KEY_ENV<<$EOF" >> "$GITHUB_ENV"
           cat "$KEY_FILE" >> "$GITHUB_ENV"
