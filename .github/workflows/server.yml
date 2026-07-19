@@ -31,10 +31,15 @@ jobs:
         run: |
           KEY_FILE="$RUNNER_TEMP/ec2_key"
           umask 177
-          printf '%s' "${{ secrets.EC2_PRIVATE_KEY }}" | sed 's/\\n/\n/g' | tr -d '\r' > "$KEY_FILE"
+          RAW_KEY="${{ secrets.EC2_PRIVATE_KEY }}"
+          printf '%s' "$RAW_KEY" | sed 's/\\n/\n/g' | tr -d '\r' > "$KEY_FILE"
           if ! grep -q "BEGIN .*PRIVATE KEY" "$KEY_FILE"; then
-            echo "::error::EC2_PRIVATE_KEY appears invalid."
-            exit 1
+            if printf '%s' "$RAW_KEY" | tr -d '\r\n' | base64 --decode 2>/dev/null | tr -d '\r' > "$KEY_FILE" && grep -q "BEGIN .*PRIVATE KEY" "$KEY_FILE"; then
+              :
+            else
+              echo "::error::EC2_PRIVATE_KEY appears invalid. Use a PEM/OpenSSH private key (plain or base64-encoded)."
+              exit 1
+            fi
           fi
           echo "EC2_KEY_PATH=$KEY_FILE" >> "$GITHUB_ENV"
 
