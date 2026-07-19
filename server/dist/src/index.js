@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Deploy trigger: 2026-06-08
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
@@ -20,8 +21,11 @@ const PORT = process.env.PORT || 4000;
 // Initialize MongoDB Connection
 (0, connect_1.connectDB)();
 // Middleware
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",")
+    : ["http://localhost:5173"];
 app.use((0, cors_1.default)({
-    origin: process.env.ALLOWED_ORIGINS || "http://localhost:5173",
+    origin: allowedOrigins,
 }));
 app.use(express_1.default.json());
 app.get("/meta", async (req, res) => {

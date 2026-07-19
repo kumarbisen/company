@@ -39,7 +39,9 @@ jobs:
             cd /home/ubuntu/server
             
             # Write server .env securely from secret
-            echo "${{ secrets.SERVER_ENV }}" > .env
+            cat << 'EOF' > .env
+${{ secrets.SERVER_ENV }}
+EOF
             
             npm install
             npm run build
