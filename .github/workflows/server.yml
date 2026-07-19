@@ -68,8 +68,8 @@ jobs:
             
             # Write server .env securely from secret
             cat << 'EOF' > .env
-${{ secrets.SERVER_ENV }}
-EOF
+            ${{ secrets.SERVER_ENV }}
+            EOF
             
             npm install
             npm run build
