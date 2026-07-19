@@ -27,28 +27,13 @@ jobs:
             exit 1
           fi
 
-      - name: Prepare SSH key
-        run: |
-          KEY_FILE="$RUNNER_TEMP/ec2_key"
-          umask 177
-          RAW_KEY="${{ secrets.EC2_PRIVATE_KEY }}"
-          printf '%s' "$RAW_KEY" | sed 's/\\n/\n/g' | tr -d '\r' > "$KEY_FILE"
-          if ! grep -q "BEGIN .*PRIVATE KEY" "$KEY_FILE"; then
-            if printf '%s' "$RAW_KEY" | tr -d '\r\n' | base64 --decode 2>/dev/null | tr -d '\r' > "$KEY_FILE" && grep -q "BEGIN .*PRIVATE KEY" "$KEY_FILE"; then
-              :
-            else
-              echo "::error::EC2_PRIVATE_KEY appears invalid. Use a PEM/OpenSSH private key (plain or base64-encoded)."
-              exit 1
-            fi
-          fi
-          echo "EC2_KEY_PATH=$KEY_FILE" >> "$GITHUB_ENV"
 
       - name: Copy Server folder to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key_path: ${{ env.EC2_KEY_PATH }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
           source: "server/"
           target: "/home/ubuntu"
 
@@ -57,7 +42,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key_path: ${{ env.EC2_KEY_PATH }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             # Load nvm/node
             export NVM_DIR="$HOME/.nvm"
