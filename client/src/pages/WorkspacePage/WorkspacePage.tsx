@@ -117,9 +117,9 @@ export function WorkspacePage() {
   }, [tab])
 
   useEffect(() => {
-    // Scroll to bottom when messages change
+    // Scroll to bottom when a new message is added (length changes)
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [chatMessages])
+  }, [chatMessages.length])
 
   const token = localStorage.getItem("user_token")
 

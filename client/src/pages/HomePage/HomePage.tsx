@@ -14,6 +14,7 @@ const steps = [
 export function HomePage() {
   return (
     <Layout>
+      <main>
       <section className={styles.hero}>
         <div className={styles.glow} />
 
@@ -78,6 +79,7 @@ export function HomePage() {
 
       <LiveFeedPage compact />
       <TopStories />
+      </main>
     </Layout>
   )
 }

@@ -20,7 +20,7 @@ type UserProfile = {
 export function Navigation() {
   const [open, setOpen] = useState(false)
   const [openLogin, setOpenLogin] = useState(false)
-  
+
   // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<UserProfile | null>(null)
@@ -257,7 +257,7 @@ export function Navigation() {
             <>
               <button
                 className={styles.logoutBtn}
-                style={{ color: "inherit", fontWeight: 600, marginRight: 8 ,border:"2px solid black",borderRadius:"10px"}}
+                style={{ color: "inherit", fontWeight: 600, marginRight: 8, border: "2px solid black", borderRadius: "10px" }}
                 onClick={triggerFirebaseLogin}
               >
                 Sign in
@@ -313,7 +313,7 @@ export function Navigation() {
                 </>
               ) : (
                 <>
-                  
+
                   <a className={styles.networkButton} href="/services" onClick={() => setOpen(false)}>
                     Services
                   </a>
@@ -321,16 +321,7 @@ export function Navigation() {
                     Get started
                   </a>
 
-                  <button
-                    className={styles.darkButton}
-                    style={{ width: "100%", background: "none", border: "1px solid", color: "inherit", marginBottom: 6 , cursor:"pointer"}}
-                    onClick={() => {
-                      setOpen(false)
-                      triggerFirebaseLogin()
-                    }}
-                  >
-                    Sign in
-                  </button>
+
                 </>
               )}
             </div>
@@ -364,7 +355,7 @@ export function Navigation() {
             <div style={{ background: "#f6f3ee", padding: "14px 16px", borderRadius: 10, fontSize: 12, color: "#4b5563", marginBottom: 20, textAlign: "left", lineHeight: 1.5, border: "1px solid #ded9d1" }}>
               <strong style={{ color: "#151515", display: "block", marginBottom: 6 }}>Add these VITE keys to client `.env`:</strong>
               <pre style={{ margin: 0, fontFamily: "monospace", fontSize: 11, background: "#fff", padding: 10, borderRadius: 6, border: "1px solid #ded9d1", overflowX: "auto", color: "#1f2937" }}>
-{`VITE_FIREBASE_API_KEY=AIzaSy...
+                {`VITE_FIREBASE_API_KEY=AIzaSy...
 VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your-project-id
 VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com

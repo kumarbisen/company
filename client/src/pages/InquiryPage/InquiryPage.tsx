@@ -13,15 +13,14 @@ const goalOptions = [
 ]
 
 export function InquiryPage() {
-  const [goalValue, setGoalValue] = useState("")
+  // Form states
+  const [companyName, setCompanyName] = useState(() => sessionStorage.getItem("brief_companyName") || "")
+  const [phone, setPhone] = useState(() => sessionStorage.getItem("brief_phone") || "")
+  const [budget, setBudget] = useState(() => sessionStorage.getItem("brief_budget") || "")
+  const [details, setDetails] = useState(() => sessionStorage.getItem("brief_details") || "")
+  const [goalValue, setGoalValue] = useState(() => sessionStorage.getItem("brief_goalValue") || "")
   const [showDropdown, setShowDropdown] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
-
-  // Form states
-  const [companyName, setCompanyName] = useState("")
-  const [phone, setPhone] = useState("")
-  const [budget, setBudget] = useState("")
-  const [details, setDetails] = useState("")
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -29,6 +28,15 @@ export function InquiryPage() {
   const filtered = goalOptions.filter((opt) =>
     opt.toLowerCase().includes(goalValue.toLowerCase())
   )
+
+  // Save to sessionStorage on change
+  useEffect(() => {
+    sessionStorage.setItem("brief_companyName", companyName)
+    sessionStorage.setItem("brief_phone", phone)
+    sessionStorage.setItem("brief_budget", budget)
+    sessionStorage.setItem("brief_details", details)
+    sessionStorage.setItem("brief_goalValue", goalValue)
+  }, [companyName, phone, budget, details, goalValue])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -99,6 +107,12 @@ export function InquiryPage() {
 
       const data = await resp.json().catch(() => null)
       if (resp.ok) {
+        // Clear saved form data
+        sessionStorage.removeItem("brief_companyName")
+        sessionStorage.removeItem("brief_phone")
+        sessionStorage.removeItem("brief_budget")
+        sessionStorage.removeItem("brief_details")
+        sessionStorage.removeItem("brief_goalValue")
         // Redirect to user workspace
         window.location.href = "/workspace"
       } else {
