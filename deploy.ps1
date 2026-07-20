@@ -68,14 +68,14 @@ $newEnv = @()
 $foundAllowedOrigins = $false
 foreach ($line in $envContent) {
     if ($line -like "ALLOWED_ORIGINS=*") {
-        $newEnv += "ALLOWED_ORIGINS=$s3WebsiteUrl"
+        $newEnv += "ALLOWED_ORIGINS=$s3WebsiteUrl,https://kunalconnects.com,https://www.kunalconnects.com"
         $foundAllowedOrigins = $true
     } else {
         $newEnv += $line
     }
 }
 if (-not $foundAllowedOrigins) {
-    $newEnv += "ALLOWED_ORIGINS=$s3WebsiteUrl"
+    $newEnv += "ALLOWED_ORIGINS=$s3WebsiteUrl,https://kunalconnects.com,https://www.kunalconnects.com"
 }
 $newEnv | Set-Content "server/.env"
 
@@ -126,10 +126,10 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-Write-Host "Step 9: Building client locally pointing to EC2 IP: http://${publicIp}:4000..."
+Write-Host "Step 9: Building client locally pointing to API: https://api.kunalconnects.com..."
 # Set env variable for the vite build process
 $oldEnvApi = $env:VITE_API_BASE_URL
-$env:VITE_API_BASE_URL = "http://${publicIp}:4000"
+$env:VITE_API_BASE_URL = "https://api.kunalconnects.com"
 
 cd client
 npm install

@@ -4,7 +4,7 @@ import { apiUrl } from "../data/api"
 import { MenuCloseIcon, MenuHamburgerIcon } from "../styles/Icons"
 import * as styles from "./Navigation.css"
 import { auth, googleProvider, isFirebaseConfigured, missingFirebaseConfigKeys } from "../config/firebase"
-import { getAdditionalUserInfo, signInWithPopup } from "firebase/auth"
+import { getAdditionalUserInfo, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth"
 
 type UserProfile = {
   email: string
@@ -42,6 +42,38 @@ export function Navigation() {
         localStorage.removeItem("user_token")
         localStorage.removeItem("user_profile")
       }
+    }
+
+    // Handle Firebase redirect login result if any
+    if (auth) {
+      getRedirectResult(auth)
+        .then(async (result) => {
+          if (result) {
+            setIsAuthLoading(true)
+            const firebaseUser = result.user
+            const additionalInfo = getAdditionalUserInfo(result)
+            if (firebaseUser && firebaseUser.email) {
+              await handleGoogleLogin(
+                {
+                  email: firebaseUser.email,
+                  name: firebaseUser.displayName || "Google User",
+                  avatar: firebaseUser.photoURL || "",
+                  uid: firebaseUser.uid,
+                  providerId: firebaseUser.providerData[0]?.providerId || firebaseUser.providerId || "google.com",
+                  emailVerified: firebaseUser.emailVerified,
+                  lastSignInAt: firebaseUser.metadata.lastSignInTime || undefined,
+                  isNewUser: additionalInfo?.isNewUser || false,
+                },
+                await firebaseUser.getIdToken()
+              )
+            }
+            setIsAuthLoading(false)
+          }
+        })
+        .catch((err) => {
+          console.error("Redirect login error:", err)
+          setIsAuthLoading(false)
+        })
     }
 
     // Listen to global sign-in event
@@ -95,6 +127,12 @@ export function Navigation() {
         throw new Error("Could not retrieve user email from Google account.")
       }
     } catch (err: any) {
+      if (err.code === "auth/popup-blocked" || err.message?.includes("popup-blocked")) {
+        console.warn("Popup blocked by browser. Falling back to redirect...")
+        await signInWithRedirect(auth, googleProvider)
+        return
+      }
+
       console.warn("Firebase Google Sign-In popup could not complete. Providing sandbox developer fallback...", err)
       setAuthErrorMsg(err.message || "Authentication error occurred.")
       setShowDevFallback(true)
@@ -173,8 +211,9 @@ export function Navigation() {
   return (
     <>
       <header className={styles.header} data-open={open ? "true" : undefined}>
-        <a className={styles.brand} href="/">
-          KunalConnects
+        <a className={styles.brand} href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+          <img src="/favicon.svg?v=2" alt="KunalConnects Logo" style={{ width: '36px', height: '36px' }} />
+          <span style={{ fontFamily: '"Dancing Script", cursive', fontSize: '32px', fontWeight: 700, lineHeight: 1, paddingBottom: '4px' }}>KunalConnects</span>
         </a>
 
         {/* Desktop nav */}
