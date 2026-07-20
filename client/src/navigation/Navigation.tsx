@@ -24,7 +24,6 @@ export function Navigation() {
   // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<UserProfile | null>(null)
-  const [hasLoggedInBefore, setHasLoggedInBefore] = useState(false)
 
   // Firebase Auth integration states
   const [showDevFallback, setShowDevFallback] = useState(false)
@@ -33,7 +32,6 @@ export function Navigation() {
 
   useEffect(() => {
     // Check if user has logged in before
-    setHasLoggedInBefore(localStorage.getItem("has_logged_in_before") === "true")
 
     // Check if token exists
     const token = localStorage.getItem("user_token")
@@ -148,7 +146,6 @@ export function Navigation() {
 
   async function handleGoogleLogin(firebaseProfile: UserProfile, firebaseIdToken: string) {
     localStorage.setItem("has_logged_in_before", "true")
-    setHasLoggedInBefore(true)
 
     const fallbackUser = {
       ...firebaseProfile,
