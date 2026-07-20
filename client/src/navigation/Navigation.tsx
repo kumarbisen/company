@@ -262,22 +262,15 @@ export function Navigation() {
             </>
           ) : (
             <>
-              <a className={styles.networkButton} href="/services">
-                Services
+              <button
+                className={styles.outlineButton}
+                onClick={triggerFirebaseLogin}
+              >
+                Sign in
+              </button>
+              <a className={styles.darkButton} href="/agent">
+                Get started
               </a>
-              {hasLoggedInBefore ? (
-                <button
-                  className={styles.darkButton}
-                  style={{ cursor: "pointer", border: "none", fontFamily: "inherit", fontSize: "inherit" }}
-                  onClick={triggerFirebaseLogin}
-                >
-                  Sign in
-                </button>
-              ) : (
-                <a className={styles.darkButton} href="/agent">
-                  Get started
-                </a>
-              )}
             </>
           )}
         </div>
@@ -323,25 +316,19 @@ export function Navigation() {
                 </>
               ) : (
                 <>
-                  <a className={styles.networkButton} href="/services" onClick={() => setOpen(false)}>
-                    Services
+                  <button
+                    className={styles.outlineButton}
+                    style={{ width: "100%" }}
+                    onClick={() => {
+                      setOpen(false)
+                      triggerFirebaseLogin()
+                    }}
+                  >
+                    Sign in
+                  </button>
+                  <a className={styles.darkButton} href="/agent" onClick={() => setOpen(false)}>
+                    Get started
                   </a>
-                  {hasLoggedInBefore ? (
-                    <button
-                      className={styles.darkButton}
-                      style={{ width: "100%", cursor: "pointer", border: "none", fontFamily: "inherit", fontSize: "inherit" }}
-                      onClick={() => {
-                        setOpen(false)
-                        triggerFirebaseLogin()
-                      }}
-                    >
-                      Sign in
-                    </button>
-                  ) : (
-                    <a className={styles.darkButton} href="/agent" onClick={() => setOpen(false)}>
-                      Get started
-                    </a>
-                  )}
                 </>
               )}
             </div>

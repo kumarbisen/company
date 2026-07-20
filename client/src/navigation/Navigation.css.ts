@@ -186,6 +186,29 @@ export const darkButton = style({
   whiteSpace: "nowrap",
 })
 
+export const outlineButton = style({
+  height: 42,
+  padding: "0 22px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: 24,
+  background: "transparent",
+  color: tokens.ink,
+  fontWeight: 800,
+  textDecoration: "none",
+  border: `2px solid ${tokens.ink}`,
+  whiteSpace: "nowrap",
+  cursor: "pointer",
+  fontFamily: "inherit",
+  fontSize: "inherit",
+  transition: "background 0.15s, color 0.15s",
+  ":hover": {
+    background: tokens.ink,
+    color: "#fff",
+  },
+})
+
 export const chatIcon = style({
   width: 14,
   height: 14,
