@@ -24,6 +24,7 @@ export function Navigation() {
   // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<UserProfile | null>(null)
+  const [hasLoggedInBefore, setHasLoggedInBefore] = useState(false)
 
   // Firebase Auth integration states
   const [showDevFallback, setShowDevFallback] = useState(false)
@@ -31,6 +32,9 @@ export function Navigation() {
   const [isAuthLoading, setIsAuthLoading] = useState(false)
 
   useEffect(() => {
+    // Check if user has logged in before
+    setHasLoggedInBefore(localStorage.getItem("has_logged_in_before") === "true")
+
     // Check if token exists
     const token = localStorage.getItem("user_token")
     const profileStr = localStorage.getItem("user_profile")
@@ -143,6 +147,9 @@ export function Navigation() {
   }
 
   async function handleGoogleLogin(firebaseProfile: UserProfile, firebaseIdToken: string) {
+    localStorage.setItem("has_logged_in_before", "true")
+    setHasLoggedInBefore(true)
+
     const fallbackUser = {
       ...firebaseProfile,
       avatar: firebaseProfile.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(firebaseProfile.name)}`,
@@ -255,19 +262,22 @@ export function Navigation() {
             </>
           ) : (
             <>
-              <button
-                className={styles.logoutBtn}
-                style={{ color: "inherit", fontWeight: 600, marginRight: 8, border: "2px solid black", borderRadius: "10px" }}
-                onClick={triggerFirebaseLogin}
-              >
-                Sign in
-              </button>
               <a className={styles.networkButton} href="/services">
                 Services
               </a>
-              <a className={styles.darkButton} href="/agent">
-                Get started
-              </a>
+              {hasLoggedInBefore ? (
+                <button
+                  className={styles.darkButton}
+                  style={{ cursor: "pointer", border: "none", fontFamily: "inherit", fontSize: "inherit" }}
+                  onClick={triggerFirebaseLogin}
+                >
+                  Sign in
+                </button>
+              ) : (
+                <a className={styles.darkButton} href="/agent">
+                  Get started
+                </a>
+              )}
             </>
           )}
         </div>
@@ -313,15 +323,25 @@ export function Navigation() {
                 </>
               ) : (
                 <>
-
                   <a className={styles.networkButton} href="/services" onClick={() => setOpen(false)}>
                     Services
                   </a>
-                  <a className={styles.darkButton} href="/agent" onClick={() => setOpen(false)}>
-                    Get started
-                  </a>
-
-
+                  {hasLoggedInBefore ? (
+                    <button
+                      className={styles.darkButton}
+                      style={{ width: "100%", cursor: "pointer", border: "none", fontFamily: "inherit", fontSize: "inherit" }}
+                      onClick={() => {
+                        setOpen(false)
+                        triggerFirebaseLogin()
+                      }}
+                    >
+                      Sign in
+                    </button>
+                  ) : (
+                    <a className={styles.darkButton} href="/agent" onClick={() => setOpen(false)}>
+                      Get started
+                    </a>
+                  )}
                 </>
               )}
             </div>

@@ -12,10 +12,53 @@ const goalOptions = [
   "Other Services",
 ]
 
+const countryCodes = [
+  { code: "+1", label: "US/CA (+1)" },
+  { code: "+44", label: "UK (+44)" },
+  { code: "+91", label: "IN (+91)" },
+  { code: "+61", label: "AU (+61)" },
+  { code: "+81", label: "JP (+81)" },
+  { code: "+49", label: "DE (+49)" },
+  { code: "+33", label: "FR (+33)" },
+  { code: "+39", label: "IT (+39)" },
+  { code: "+55", label: "BR (+55)" },
+  { code: "+52", label: "MX (+52)" },
+  { code: "+86", label: "CN (+86)" },
+  { code: "+971", label: "AE (+971)" },
+  { code: "+27", label: "ZA (+27)" },
+  { code: "+65", label: "SG (+65)" },
+  { code: "+60", label: "MY (+60)" },
+  { code: "+63", label: "PH (+63)" },
+  { code: "+62", label: "ID (+62)" },
+  { code: "+64", label: "NZ (+64)" },
+  { code: "+31", label: "NL (+31)" },
+  { code: "+46", label: "SE (+46)" },
+  { code: "+41", label: "CH (+41)" },
+  { code: "+34", label: "ES (+34)" },
+  { code: "+82", label: "KR (+82)" },
+  { code: "+90", label: "TR (+90)" },
+  { code: "+48", label: "PL (+48)" },
+  { code: "+32", label: "BE (+32)" },
+  { code: "+45", label: "DK (+45)" },
+  { code: "+358", label: "FI (+358)" },
+  { code: "+47", label: "NO (+47)" },
+  { code: "+43", label: "AT (+43)" },
+  { code: "+351", label: "PT (+351)" },
+  { code: "+30", label: "GR (+30)" },
+  { code: "+353", label: "IE (+353)" },
+  { code: "+972", label: "IL (+972)" },
+  { code: "+966", label: "SA (+966)" },
+  { code: "+974", label: "QA (+974)" },
+  { code: "+965", label: "KW (+965)" },
+  { code: "+973", label: "BH (+973)" },
+  { code: "+968", label: "OM (+968)" },
+]
+
 export function InquiryPage() {
   // Form states
   const [companyName, setCompanyName] = useState(() => sessionStorage.getItem("brief_companyName") || "")
   const [phone, setPhone] = useState(() => sessionStorage.getItem("brief_phone") || "")
+  const [countryCode, setCountryCode] = useState(() => sessionStorage.getItem("brief_countryCode") || "+1")
   const [budget, setBudget] = useState(() => sessionStorage.getItem("brief_budget") || "")
   const [details, setDetails] = useState(() => sessionStorage.getItem("brief_details") || "")
   const [goalValue, setGoalValue] = useState(() => sessionStorage.getItem("brief_goalValue") || "")
@@ -33,10 +76,11 @@ export function InquiryPage() {
   useEffect(() => {
     sessionStorage.setItem("brief_companyName", companyName)
     sessionStorage.setItem("brief_phone", phone)
+    sessionStorage.setItem("brief_countryCode", countryCode)
     sessionStorage.setItem("brief_budget", budget)
     sessionStorage.setItem("brief_details", details)
     sessionStorage.setItem("brief_goalValue", goalValue)
-  }, [companyName, phone, budget, details, goalValue])
+  }, [companyName, phone, countryCode, budget, details, goalValue])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -58,7 +102,7 @@ export function InquiryPage() {
     }
     window.addEventListener("user-logged-in", handleAutoSubmit)
     return () => window.removeEventListener("user-logged-in", handleAutoSubmit)
-  }, [companyName, goalValue, phone, budget, details])
+  }, [companyName, goalValue, countryCode, phone, budget, details])
 
   async function submitBrief() {
     const token = localStorage.getItem("user_token")
@@ -86,7 +130,7 @@ export function InquiryPage() {
         body: JSON.stringify({
           companyName,
           primaryGoal: goalValue,
-          phone,
+          phone: `${countryCode} ${phone}`,
           budget,
           details,
         }),
@@ -110,6 +154,7 @@ export function InquiryPage() {
         // Clear saved form data
         sessionStorage.removeItem("brief_companyName")
         sessionStorage.removeItem("brief_phone")
+        sessionStorage.removeItem("brief_countryCode")
         sessionStorage.removeItem("brief_budget")
         sessionStorage.removeItem("brief_details")
         sessionStorage.removeItem("brief_goalValue")
@@ -185,13 +230,27 @@ export function InquiryPage() {
 
           <label className={styles.label}>
             Phone Number
-            <input
-              className={styles.field}
-              placeholder="Phone Number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
+            <div className={styles.phoneRow}>
+              <select
+                className={styles.selectField}
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+              >
+                {countryCodes.map((c) => (
+                  <option key={c.label} value={c.code}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+              <input
+                className={styles.field}
+                placeholder="Phone Number"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </div>
           </label>
 
           <label className={styles.label}>

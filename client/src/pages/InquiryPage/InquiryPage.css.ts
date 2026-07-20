@@ -8,6 +8,8 @@ export const labelText = style({ fontWeight: 800 })
 export const field = style({ width: "100%", border: `1px solid ${tokens.line}`, borderRadius: 8, padding: 16, background: tokens.surface, color: tokens.ink, font: "inherit" })
 export const textarea = style([field, { minHeight: 150, resize: "vertical" }])
 export const submit = style({ height: 54, border: 0, borderRadius: 28, background: tokens.ink, color: "#fff", fontWeight: 800 })
+export const phoneRow = style({ display: "grid", gridTemplateColumns: "120px 1fr", gap: 12 })
+export const selectField = style([field, { appearance: "none", cursor: "pointer" }])
 
 export const dropdownWrap = style({
   position: "relative",
