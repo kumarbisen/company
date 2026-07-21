@@ -313,6 +313,11 @@ export function Navigation() {
                 </>
               ) : (
                 <>
+
+                  <a className={styles.darkButton} href="/agent" onClick={() => setOpen(false)}>
+                    Get started
+                  </a>
+
                   <button
                     className={styles.outlineButton}
                     style={{ width: "100%" }}
@@ -323,9 +328,6 @@ export function Navigation() {
                   >
                     Sign in
                   </button>
-                  <a className={styles.darkButton} href="/agent" onClick={() => setOpen(false)}>
-                    Get started
-                  </a>
                 </>
               )}
             </div>
