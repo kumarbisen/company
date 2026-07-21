@@ -58,13 +58,13 @@ export function InquiryPage() {
   // Form states
   const [companyName, setCompanyName] = useState(() => sessionStorage.getItem("brief_companyName") || "")
   const [phone, setPhone] = useState(() => sessionStorage.getItem("brief_phone") || "")
-  const [countryCode, setCountryCode] = useState(() => sessionStorage.getItem("brief_countryCode") || "+1")
+  const [countryCode, setCountryCode] = useState(() => sessionStorage.getItem("brief_countryCode") || "+91")
   const [budget, setBudget] = useState(() => sessionStorage.getItem("brief_budget") || "")
   const [details, setDetails] = useState(() => sessionStorage.getItem("brief_details") || "")
   const [goalValue, setGoalValue] = useState(() => sessionStorage.getItem("brief_goalValue") || "")
   const [showDropdown, setShowDropdown] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
-  
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -175,7 +175,7 @@ export function InquiryPage() {
     <Layout>
       <section className={styles.page}>
         <PageIntro kicker="Get started" title="Build your KunalConnects growth brief." />
-        
+
         <form className={styles.form} onSubmit={(e) => { e.preventDefault(); submitBrief(); }}>
           {error && (
             <div style={{ padding: 14, borderRadius: 8, background: "#fef2f2", border: "1px solid #fee2e2", color: "#dc2626", fontWeight: 600 }}>
@@ -265,7 +265,7 @@ export function InquiryPage() {
           </label>
 
           <label className={styles.label}>
-            What should the service pod solve first?
+            What should the service you want to solve first?
             <textarea
               className={styles.textarea}
               placeholder="Tell us what is stuck, what you want to improve, and what success looks like."
@@ -276,7 +276,7 @@ export function InquiryPage() {
           </label>
 
           <button className={styles.submit} type="submit" disabled={loading}>
-            {loading ? "Submitting..." : "Create brief"}
+            {loading ? "Submitting..." : "submit"}
           </button>
         </form>
       </section>
