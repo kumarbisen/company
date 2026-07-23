@@ -256,6 +256,11 @@ export function AdminPage() {
   async function fetchClients() {
     try {
       const resp = await fetch(apiUrl("/api/workspace/admin/workspaces"), { headers })
+      if (resp.status === 401) {
+        localStorage.removeItem("admin_token")
+        setAuthed(false)
+        return
+      }
       if (resp.ok) setClients(await resp.json())
     } catch (err) {
       console.error(err)
@@ -266,6 +271,11 @@ export function AdminPage() {
     if (!selectedClient) return
     try {
       const resp = await fetch(apiUrl(`/api/workspace/admin/workspaces/${selectedClient._id}/messages`), { headers })
+      if (resp.status === 401) {
+        localStorage.removeItem("admin_token")
+        setAuthed(false)
+        return
+      }
       if (resp.ok) setClientMessages(await resp.json())
     } catch (err) {
       if (!silent) console.error(err)
