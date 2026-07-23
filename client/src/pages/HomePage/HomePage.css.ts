@@ -219,3 +219,10 @@ export const benefitItem = style({
   fontSize: 22,
   lineHeight: 1.25,
 })
+
+export const ctaSection = style({
+  padding: "64px 24px",
+  display: "flex",
+  justifyContent: "center",
+  background: tokens.surface,
+})

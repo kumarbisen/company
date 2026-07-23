@@ -70,3 +70,34 @@ export const outcomes = style({
   display: "grid",
   gap: 24,
 })
+
+export const ctaSection = style({
+  marginTop: 48,
+  display: "flex",
+  justifyContent: "flex-start",
+})
+
+export const flowButton = style({
+  height: 56,
+  padding: "0 26px 0 28px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 24,
+  borderRadius: 30,
+  background: tokens.ink,
+  color: "#fff",
+  fontWeight: 800,
+  textDecoration: "none",
+})
+
+export const flowIcon = style({
+  width: 36,
+  height: 36,
+  display: "grid",
+  placeItems: "center",
+  borderRadius: "50%",
+  background: tokens.lime,
+  color: tokens.ink,
+  fontSize: 20,
+})

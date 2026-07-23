@@ -79,6 +79,12 @@ export function HomePage() {
 
       <LiveFeedPage compact />
       <TopStories />
+      
+      <section className={styles.ctaSection}>
+        <a className={styles.flowButton} href="https://kunalconnects.com/agent">
+          Get Free Consultation <span className={styles.flowIcon}>↗</span>
+        </a>
+      </section>
       </main>
     </Layout>
   )

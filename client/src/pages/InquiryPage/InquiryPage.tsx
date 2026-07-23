@@ -156,7 +156,7 @@ export function InquiryPage() {
       if (resp.ok) {
         // Trigger Google Ads Conversion Tracking
         if (typeof window !== "undefined" && (window as any).gtag) {
-          ;(window as any).gtag("event", "conversion", {
+          ; (window as any).gtag("event", "conversion", {
             send_to: "AW-16631855639/XJFuCM-t0dQcEJf01_o9", // Triggers conversion for this specific action
           })
         }
@@ -185,7 +185,7 @@ export function InquiryPage() {
   return (
     <Layout>
       <section className={styles.page}>
-        <PageIntro kicker="Get started" title="Build your KunalConnects growth brief." />
+        <PageIntro kicker="Get started" title="Get Free Consultation Fill this Form." />
 
         <form className={styles.form} onSubmit={(e) => { e.preventDefault(); submitBrief(); }}>
           {error && (

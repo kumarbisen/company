@@ -21,3 +21,34 @@ export const card = style({
 export const number = style({ color: tokens.muted, fontWeight: 800 })
 export const title = style({ margin: "44px 0 10px", fontSize: 26 })
 export const text = style({ margin: 0, color: tokens.muted })
+
+export const ctaSection = style({
+  marginTop: 64,
+  display: "flex",
+  justifyContent: "flex-start",
+})
+
+export const flowButton = style({
+  height: 56,
+  padding: "0 26px 0 28px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 24,
+  borderRadius: 30,
+  background: tokens.ink,
+  color: "#fff",
+  fontWeight: 800,
+  textDecoration: "none",
+})
+
+export const flowIcon = style({
+  width: 36,
+  height: 36,
+  display: "grid",
+  placeItems: "center",
+  borderRadius: "50%",
+  background: tokens.lime,
+  color: tokens.ink,
+  fontSize: 20,
+})
