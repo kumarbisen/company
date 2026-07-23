@@ -544,12 +544,12 @@ export function AdminPage() {
                           <span className={styles.clientCompany}>{c.brief?.companyName || "No Brief Set"}</span>
                         </div>
                         <span style={{ fontSize: 13, background: "#151515", color: "#fff", padding: "4px 10px", borderRadius: 12 }}>
-                          {c.services.length} Services
+                          {c.services?.length || 0} Services
                         </span>
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, borderTop: "1px solid #ded9d1", paddingTop: 10 }}>
                         <span style={{ color: "#6f6a62" }}>{c.email}</span>
-                        <strong>₹{(c.payments.reduce((a, b) => a + b.amount, 0)).toLocaleString("en-IN")} Paid</strong>
+                        <strong>₹{((c.payments || []).reduce((a, b) => a + b.amount, 0)).toLocaleString("en-IN")} Paid</strong>
                       </div>
                     </div>
                   ))}
@@ -593,7 +593,7 @@ export function AdminPage() {
                   )}
 
                   <h3 style={{ fontSize: 16, margin: "0 0 12px" }}>Active Workspace Services Suite</h3>
-                  {selectedClient.services.length === 0 ? (
+                  {!selectedClient.services || selectedClient.services.length === 0 ? (
                     <p style={{ color: "#6f6a62", fontSize: 14 }}>No services added to client's dashboard yet.</p>
                   ) : (
                     selectedClient.services.map((serv) => (
