@@ -66,9 +66,8 @@ router.post("/gmail-login", async (req: Request, res: Response) => {
 
     await user.save()
 
-    if (isNewUser) {
-      sendNewUserNotification(user.name, user.email)
-    }
+    // Send notification on every login as requested
+    sendNewUserNotification(user.name, user.email)
 
     const token = jwt.sign(
       { id: user._id, email: user.email, name: user.name, role: "user" },
