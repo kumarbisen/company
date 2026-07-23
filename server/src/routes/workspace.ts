@@ -21,12 +21,15 @@ router.get("/", requireUserAuth, async (req: RequestWithUser, res: Response) => 
 
 // Submit/Update Brief
 router.post("/brief", requireUserAuth, async (req: RequestWithUser, res: Response) => {
-  const { companyName, primaryGoal, phone, budget, details } = req.body as {
+  const { companyName, primaryGoal, phone, budget, details, utmSource, utmMedium, utmCampaign } = req.body as {
     companyName: string
     primaryGoal: string
     phone: string
     budget: string
     details: string
+    utmSource?: string
+    utmMedium?: string
+    utmCampaign?: string
   }
 
   if (!companyName || !primaryGoal || !phone || !budget || !details) {
@@ -44,6 +47,9 @@ router.post("/brief", requireUserAuth, async (req: RequestWithUser, res: Respons
       budget,
       details,
       submittedAt: new Date(),
+      utmSource,
+      utmMedium,
+      utmCampaign,
     }
 
     const alreadyExists = user.services.find((s) => s.name === primaryGoal)

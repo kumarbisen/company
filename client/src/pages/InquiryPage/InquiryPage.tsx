@@ -133,6 +133,9 @@ export function InquiryPage() {
           phone: `${countryCode} ${phone}`,
           budget,
           details,
+          utmSource: new URLSearchParams(window.location.search).get("utm_source") || undefined,
+          utmMedium: new URLSearchParams(window.location.search).get("utm_medium") || undefined,
+          utmCampaign: new URLSearchParams(window.location.search).get("utm_campaign") || undefined,
         }),
       })
 
@@ -151,6 +154,13 @@ export function InquiryPage() {
 
       const data = await resp.json().catch(() => null)
       if (resp.ok) {
+        // Trigger Google Ads Conversion Tracking
+        if (typeof window !== "undefined" && (window as any).gtag) {
+          ;(window as any).gtag("event", "conversion", {
+            send_to: "AW-16631855639/XJFuCM-t0dQcEJf01_o9", // Triggers conversion for this specific action
+          })
+        }
+
         // Clear saved form data
         sessionStorage.removeItem("brief_companyName")
         sessionStorage.removeItem("brief_phone")
@@ -160,6 +170,7 @@ export function InquiryPage() {
         sessionStorage.removeItem("brief_goalValue")
         // Redirect to user workspace
         window.location.href = "/workspace"
+
       } else {
         setError(data?.error || "Failed to submit your brief. Please try again.")
       }

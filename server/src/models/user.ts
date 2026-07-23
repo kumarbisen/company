@@ -22,6 +22,9 @@ export interface IBrief {
   budget: string
   details: string
   submittedAt: Date
+  utmSource?: string
+  utmMedium?: string
+  utmCampaign?: string
 }
 
 export interface IUser extends Document {
@@ -45,6 +48,9 @@ const BriefSchema = new Schema<IBrief>({
   budget: { type: String, required: true },
   details: { type: String, required: true },
   submittedAt: { type: Date, default: Date.now },
+  utmSource: { type: String },
+  utmMedium: { type: String },
+  utmCampaign: { type: String },
 })
 
 const ServiceItemSchema = new Schema<IServiceItem>({
