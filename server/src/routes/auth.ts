@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import { requireAuth, requireUserAuth, RequestWithAdmin, RequestWithUser } from "../middleware/auth"
 import User from "../models/user"
+import { sendNewUserNotification } from "../utils/mailer"
 
 const router = Router()
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_jwt_key_change_me"
@@ -43,8 +44,10 @@ router.post("/gmail-login", async (req: Request, res: Response) => {
 
   try {
     let user = await User.findOne({ email })
+    let isNewUser = false
 
     if (!user) {
+      isNewUser = true
       user = new User({
         email,
         name,
@@ -62,6 +65,10 @@ router.post("/gmail-login", async (req: Request, res: Response) => {
     }
 
     await user.save()
+
+    if (isNewUser) {
+      sendNewUserNotification(user.name, user.email)
+    }
 
     const token = jwt.sign(
       { id: user._id, email: user.email, name: user.name, role: "user" },

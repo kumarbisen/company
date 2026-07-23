@@ -3,6 +3,7 @@ import { requireUserAuth, requireAuth, RequestWithUser, RequestWithAdmin } from 
 import User from "../models/user"
 import Message from "../models/message"
 import mongoose from "mongoose"
+import { sendNewMessageNotification } from "../utils/mailer"
 
 const router = Router()
 
@@ -130,6 +131,12 @@ router.post("/messages", requireUserAuth, async (req: RequestWithUser, res: Resp
       isWorkspace: true,
     })
     await newMsg.save()
+
+    const user = await User.findById(req.user.id)
+    if (user) {
+      sendNewMessageNotification(user.name, user.email, message)
+    }
+
     res.status(201).json(newMsg)
   } catch (err: any) {
     res.status(500).json({ error: "Failed to send message", details: err.message })
